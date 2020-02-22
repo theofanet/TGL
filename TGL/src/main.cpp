@@ -20,8 +20,6 @@ public:
 	virtual inline void OnDraw() {
 		INFO("Draw Layer {0} !", m_Name);
 	}
-
-private:
 };
 
 

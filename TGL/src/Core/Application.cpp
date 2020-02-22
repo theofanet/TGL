@@ -14,8 +14,8 @@ Application::~Application() {
 void Application::Run() {
 	m_Running = true;
 
-	EventDisptacher<EventWindowClose>::Sub(EVENT_FN(Application::OnWindowClose));
-	EventDisptacher<EventWindowResize>::Sub(EVENT_FN(Application::OnWindowResize));
+	SUB_EVENT(EventWindowClose, Application::OnWindowClose);
+	SUB_EVENT(EventWindowResize, Application::OnWindowResize);
 
 	// main game loop
 	while (m_Running) {

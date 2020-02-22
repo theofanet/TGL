@@ -7,8 +7,6 @@
 #include "Core/Core.h"
 
 
-#define EVENT_FN(fn) std::bind(&fn, this, std::placeholders::_1)
-
 // Callback Types
 template <typename T>
 using FuncType = std::function<bool(T&)>;
@@ -19,7 +17,7 @@ using SubscriberList = std::vector<Func<T>>;
 
 // Dispatcher
 template<typename T>
-class EventDisptacher {
+class EventDispatcher {
 public:
 	template <typename ... Args>
 	inline static void Trigger(Args&& ... args) {
@@ -39,7 +37,7 @@ public:
 };
 
 template<typename T>
-SubscriberList<T> EventDisptacher<T>::s_Subscribers;
+SubscriberList<T> EventDispatcher<T>::s_Subscribers;
 
 
 ///////////////////////////////////// EVENTS /////////////////////////////////////
@@ -54,3 +52,9 @@ public:
 		: Width(width), Height(height) {}
 	int Width, Height;
 };
+
+
+// MACROS
+#define EVENT_FN(fn) std::bind(&fn, this, std::placeholders::_1)
+#define SUB_EVENT(e, fn) EventDispatcher<e>::Sub(EVENT_FN(fn))
+#define TRIGGER_EVENT(e, ...) EventDispatcher<e>::Trigger(__VA_ARGS__)

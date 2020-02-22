@@ -50,11 +50,11 @@ void Window::Init() {
 	m_Context->Init();
 	
 	glfwSetWindowCloseCallback(m_Window, [](GLFWwindow* window) {
-		EventDisptacher<EventWindowClose>::Trigger();
+		TRIGGER_EVENT(EventWindowClose);
 	});
 
 	glfwSetWindowSizeCallback(m_Window, [](GLFWwindow* window, int width, int height) {
-		EventDisptacher<EventWindowResize>::Trigger(width, height);
+		TRIGGER_EVENT(EventWindowResize, width, height);
 	});
 }
 
