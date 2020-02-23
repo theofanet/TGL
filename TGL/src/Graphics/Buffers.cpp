@@ -12,7 +12,11 @@ Buffer::~Buffer(){
 	glDeleteBuffers(1, &m_ID);
 }
 
-VertexBuffer::VertexBuffer(const std::vector<float>& vertices) 
+Ref<VertexBuffer> VertexBuffer::Create(const std::vector<float>& vertices){
+	return CreateRef<VertexBuffer>(vertices);
+}
+
+VertexBuffer::VertexBuffer(const std::vector<float>& vertices)
 	: Buffer(GL_ARRAY_BUFFER, &vertices[0], sizeof(float) * vertices.size(), vertices.size()), m_Stride(0) {
 
 }
@@ -26,6 +30,10 @@ void VertexBuffer::AddAttrib(uint32_t count, GLenum type, bool normalized){
 		m_Stride
 	});
 	m_Stride += count * GetTypeSize(type);
+}
+
+Ref<IndexBuffer> IndexBuffer::Create(const std::vector<uint32_t>& indices){
+	return CreateRef<IndexBuffer>(indices);
 }
 
 IndexBuffer::IndexBuffer(const std::vector<uint32_t>& indices)

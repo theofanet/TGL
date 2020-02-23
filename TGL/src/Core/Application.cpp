@@ -4,6 +4,7 @@
 
 
 Application::Application(const WindowProps& props) : m_Running(false), m_Minimized(false), m_LastTime(0.0f) {
+	Log::Init();
 	m_Window = new Window(props);
 }
 
@@ -17,6 +18,8 @@ void Application::Run() {
 	SUB_EVENT(EventWindowClose, Application::OnWindowClose);
 	SUB_EVENT(EventWindowResize, Application::OnWindowResize);
 
+	Renderer::Init();
+
 	// main game loop
 	while (m_Running) {
 		float time = (float)glfwGetTime();
@@ -24,6 +27,8 @@ void Application::Run() {
 		m_LastTime = time;
 
 		if (!m_Minimized) {
+			Renderer::Clear();
+
 			for (auto& layer : m_LayerStack) {
 				layer->OnUpdate(timestep);
 				layer->OnDraw();
@@ -32,6 +37,8 @@ void Application::Run() {
 
 		m_Window->Update();
 	}
+
+	Renderer::Shutdown();
 }
 
 void Application::PushLayer(Ref<Layer> layer){
@@ -45,14 +52,11 @@ void Application::PushOverlay(Ref<Layer> layer){
 }
 
 bool Application::OnWindowClose(EventWindowClose&) {
-	INFO("Window Close Event");
 	m_Running = false;
 	return true;
 }
 
 bool Application::OnWindowResize(EventWindowResize& e) {
-	TRACE("WIDTH: {0} | HEIGHT: {1}", e.Width, e.Height);
-
 	if (e.Width == 0 || e.Height == 0) {
 		m_Minimized = true;
 		return false;

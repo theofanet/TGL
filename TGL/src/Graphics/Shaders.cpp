@@ -4,8 +4,13 @@
 #include <fstream>
 #include <sstream>
 #include <iostream>
+#include <glm/gtc/type_ptr.hpp>
 
 
+
+Ref<Shader> Shader::Create(const std::string& sourceFilePath){
+	return CreateRef<Shader>(sourceFilePath);
+}
 
 Shader::Shader(const std::string& sourcePath){
 	m_ID = glCreateProgram();
@@ -36,9 +41,43 @@ void Shader::Unbind(){
 	glUseProgram(0);
 }
 
+void Shader::SetInt(const std::string& name, int value){
+	glUniform1i(GetUniformLocation(name), value);
+}
+
+void Shader::SetFloat(const std::string& name, float value1){
+	glUniform1f(GetUniformLocation(name), value1);
+}
+
+void Shader::SetFloat(const std::string& name, float value1, float value2){
+	glUniform2f(GetUniformLocation(name), value1, value2);
+}
+
+void Shader::SetFloat(const std::string& name, float value1, float value2, float value3){
+	glUniform3f(GetUniformLocation(name), value1, value2, value3);
+}
+
+void Shader::SetFloat(const std::string& name, float value1, float value2, float value3, float value4){
+	glUniform4f(GetUniformLocation(name), value1, value2, value3, value4);
+}
+
+void Shader::SetMat4(const std::string& name, glm::mat4 value){
+	glUniformMatrix4fv(GetUniformLocation(name), 1, GL_FALSE, glm::value_ptr(value));
+}
+
+int Shader::GetUniformLocation(const std::string& name){
+	if (m_UniformLocation.find(name) != m_UniformLocation.end())
+		return m_UniformLocation[name];
+	int location = glGetUniformLocation(m_ID, name.c_str());
+	m_UniformLocation[name] = location;
+	return location;
+}
+
 Shader::Sources Shader::ParseSourceFile(const std::string& filePath){
 	std::fstream stream(filePath);
 
+	ASSERT(stream, "Shader file not found : '{0}'", filePath);
+		
 	std::string line;
 	std::stringstream ss[Types::NB_TYPES];
 	Types type = Types::VERTEX;

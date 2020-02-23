@@ -38,6 +38,8 @@ public:
 		uint32_t offset;
 	};
 
+	static Ref<VertexBuffer> Create(const std::vector<float>& vertices);
+
 	VertexBuffer(const std::vector<float>& vertices);
 
 	void AddAttrib(uint32_t count, GLenum type, bool normalized = false);
@@ -53,5 +55,6 @@ protected:
 
 class IndexBuffer : public Buffer {
 public:
+	static Ref<IndexBuffer> Create(const std::vector<uint32_t>& indices);
 	IndexBuffer(const std::vector<uint32_t>& indices);
 };

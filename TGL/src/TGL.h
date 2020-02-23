@@ -7,6 +7,5 @@
 #include "Core/Layer.h"
 #include "Core/Log.h"
 
-#include "Graphics/Buffers.h"
-#include "Graphics/Arrays.h"
-#include "Graphics/Shaders.h"
+#include "Graphics/Renderer.h"
+#include "Graphics/Renderer2D.h"

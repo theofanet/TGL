@@ -9,6 +9,8 @@
 
 class VertexArray {
 public:
+	static Ref<VertexArray> Create();
+
 	VertexArray();
 	virtual ~VertexArray();
 

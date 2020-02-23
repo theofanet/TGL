@@ -2,6 +2,10 @@
 #include "Arrays.h"
 
 
+Ref<VertexArray> VertexArray::Create(){
+	return CreateRef<VertexArray>();
+}
+
 VertexArray::VertexArray() : m_IB(nullptr) {
 	glGenVertexArrays(1, &m_ID);
 }
