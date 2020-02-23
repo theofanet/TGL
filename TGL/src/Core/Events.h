@@ -15,6 +15,7 @@ using Func = Ref<FuncType<T>>;
 template <typename T>
 using SubscriberList = std::vector<Func<T>>;
 
+
 // Dispatcher
 template<typename T>
 class EventDispatcher {
