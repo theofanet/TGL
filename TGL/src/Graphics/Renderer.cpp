@@ -25,8 +25,9 @@ void Renderer::Clear(){
 	glClear(GL_COLOR_BUFFER_BIT);
 }
 
-void Renderer::Begin(Type mode){
+void Renderer::Begin(Type mode, const Ref<Camera>& camera){
 	s_Context->Mode = mode;
+	s_Context->ViewProjectionMatrix = camera->GetViewProjectionMatrix();
 }
 
 void Renderer::End(){

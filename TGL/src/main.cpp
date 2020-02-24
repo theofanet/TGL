@@ -6,13 +6,20 @@
 
 class TestLayer : public Layer {
 public:
-	TestLayer() : Layer("Test layer") {}
+	TestLayer() : Layer("Test layer") {
+		m_Cam = CreateRef<Camera2D>(800 / 600);
+		m_Cam->SetPositionX(1.0);
+		m_Cam->SetRotationZ(45.0);
+	}
 
 	virtual inline void OnDraw() {
-		Renderer::Begin(Renderer::R2D);
+		Renderer::Begin(Renderer::R2D, m_Cam);
 		Renderer2D::DrawQuad({ .0f, .0f }, { .5f, .5f });
 		Renderer::End();
 	}
+
+private:
+	Ref<Camera2D> m_Cam;
 };
 
 

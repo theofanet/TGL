@@ -7,6 +7,7 @@
 #include "Buffers.h"
 #include "Arrays.h"
 #include "Shaders.h"
+#include "Camera.h"
 
 
 class Renderer {
@@ -21,7 +22,7 @@ public:
 	}
 	static void Clear();
 
-	static void Begin(Type mode);
+	static void Begin(Type mode, const Ref<Camera>& camera);
 	static void End();
 
 	static void Submit(const Ref<Shader>& shader, const Ref<VertexArray>& vertexArray, const glm::mat4& model = glm::mat4(1.0f));
