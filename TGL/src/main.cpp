@@ -8,8 +8,6 @@ class TestLayer : public Layer {
 public:
 	TestLayer() : Layer("Test layer") {
 		m_Cam = CreateRef<Camera2D>(800 / 600);
-		m_Cam->SetPositionX(1.0);
-		m_Cam->SetRotationZ(45.0);
 	}
 
 	virtual inline void OnDraw() {
