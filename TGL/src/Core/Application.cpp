@@ -17,7 +17,9 @@ void Application::Run() {
 
 	SUB_EVENT(EventWindowClose, Application::OnWindowClose);
 	SUB_EVENT(EventWindowResize, Application::OnWindowResize);
+	SUB_EVENT(EventApplicationQuit, Application::OnQuit);
 
+	Keyboard::Init();
 	Renderer::Init();
 
 	// main game loop
@@ -51,11 +53,6 @@ void Application::PushOverlay(Ref<Layer> layer){
 	layer->OnAttach();
 }
 
-bool Application::OnWindowClose(EventWindowClose&) {
-	m_Running = false;
-	return true;
-}
-
 bool Application::OnWindowResize(EventWindowResize& e) {
 	if (e.Width == 0 || e.Height == 0) {
 		m_Minimized = true;
@@ -65,4 +62,18 @@ bool Application::OnWindowResize(EventWindowResize& e) {
 	m_Minimized = false;
 
 	return true;
+}
+
+bool Application::OnWindowClose(EventWindowClose&) {
+	StopApplication();
+	return true;
+}
+
+bool Application::OnQuit(EventApplicationQuit&){
+	StopApplication();
+	return false;
+}
+
+void Application::StopApplication() {
+	m_Running = false;
 }

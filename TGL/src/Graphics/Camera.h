@@ -1,6 +1,7 @@
 #pragma once
 
 #include <glm/glm.hpp>
+#include "Core/Events.h"
 
 
 class Camera {
@@ -43,6 +44,8 @@ class Camera2D : public Camera {
 public:
 	Camera2D(float aspectRatio, float zoomLevel = 1.0f);
 	virtual ~Camera2D();
+
+	bool OnWindowResize(EventWindowResize& e);
 
 	void SetProjection(float left, float right, float bottom, float top);
 protected:

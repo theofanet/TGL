@@ -56,6 +56,20 @@ void Window::Init() {
 	glfwSetWindowSizeCallback(m_Window, [](GLFWwindow* window, int width, int height) {
 		TRIGGER_EVENT(EventWindowResize, width, height);
 	});
+
+	glfwSetKeyCallback(m_Window, [](GLFWwindow* window, int key, int scancode, int action, int mods) {
+		switch (action) {
+		case GLFW_PRESS:
+			TRIGGER_EVENT(EventKeyPressed, key);
+			break;
+		case GLFW_RELEASE:
+			TRIGGER_EVENT(EventKeyReleased, key);
+			break;
+		case GLFW_REPEAT:
+			TRIGGER_EVENT(EventKeyPressed, key, true);
+			break;
+		}
+	});
 }
 
 

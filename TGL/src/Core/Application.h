@@ -4,6 +4,7 @@
 #include "Graphics/Window.h"
 #include "Graphics/Renderer.h"
 #include "Layer.h"
+#include "IO/Keyboard.h"
 
 
 class Application {
@@ -19,6 +20,11 @@ public:
 	// Events handlers
 	bool OnWindowClose(EventWindowClose&);
 	bool OnWindowResize(EventWindowResize& e);
+
+	void StopApplication();
+	inline static void Quit() { TRIGGER_EVENT(EventApplicationQuit); };
+	bool OnQuit(EventApplicationQuit&);
+
 
 private:
 	float m_LastTime;

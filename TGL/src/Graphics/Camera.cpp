@@ -22,11 +22,19 @@ void Camera::RecalculateViewMatrix(){
 	m_ViewProjectionMatrix = m_ProjectionMatrix * m_ViewMatrix;
 }
 
-Camera2D::Camera2D(float aspectRatio, float zoomLevel) : Camera(), m_AspectRatio(aspectRatio), m_ZoomLevel(zoomLevel){
+Camera2D::Camera2D(float aspectRatio, float zoomLevel) 
+	: Camera(), m_AspectRatio(aspectRatio), m_ZoomLevel(zoomLevel){
 	SetProjection(-m_AspectRatio * m_ZoomLevel, m_AspectRatio * m_ZoomLevel, -m_ZoomLevel, m_ZoomLevel);
+	SUB_EVENT(EventWindowResize, Camera2D::OnWindowResize);
 }
 
 Camera2D::~Camera2D(){
+}
+
+bool Camera2D::OnWindowResize(EventWindowResize& e){
+	m_AspectRatio = (float)e.Width / (float)e.Height;
+	SetProjection(-m_AspectRatio * m_ZoomLevel, m_AspectRatio * m_ZoomLevel, -m_ZoomLevel, m_ZoomLevel);
+	return true;
 }
 
 void Camera2D::SetProjection(float left, float right, float bottom, float top){

@@ -8,6 +8,13 @@
 #include "Arrays.h"
 #include "Shaders.h"
 #include "Camera.h"
+#include "Core/Events.h"
+
+class RendererEventHandler {
+public:
+	RendererEventHandler();
+	bool OnWindowResize(EventWindowResize& e);
+};
 
 
 class Renderer {
@@ -21,6 +28,7 @@ public:
 		s_Context->ClearColor = { color.r, color.g, color.b, alpha };
 	}
 	static void Clear();
+
 
 	static void Begin(Type mode, const Ref<Camera>& camera);
 	static void End();
@@ -38,5 +46,6 @@ private:
 		}
 	};
 
+	static Ref<RendererEventHandler> s_Handler;
 	static Ref<Context> s_Context;
 };

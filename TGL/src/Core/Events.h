@@ -43,6 +43,10 @@ SubscriberList<T> EventDispatcher<T>::s_Subscribers;
 
 ///////////////////////////////////// EVENTS /////////////////////////////////////
 
+// ===== APP ========
+
+class EventApplicationQuit {};
+
 // ===== WINDOWS ======
 
 class EventWindowClose {};
@@ -52,6 +56,22 @@ public:
 	EventWindowResize(int width, int height) 
 		: Width(width), Height(height) {}
 	int Width, Height;
+};
+
+// ======= IOs ============
+
+class EventKeyPressed {
+public:
+	EventKeyPressed(int keycode, bool repeated = false) 
+		: Keycode(keycode), Repeated(repeated) {}
+	int Keycode;
+	bool Repeated;
+};
+
+class EventKeyReleased {
+public:
+	EventKeyReleased(int keycode) : Keycode(keycode) {}
+	int Keycode;
 };
 
 

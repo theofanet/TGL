@@ -5,10 +5,11 @@
 
 
 Ref<Renderer::Context> Renderer::s_Context = CreateRef<Renderer::Context>();
-
+Ref<RendererEventHandler> Renderer::s_Handler = nullptr;
 
 void Renderer::Init(){
 	Renderer2D::Init();
+	s_Handler = CreateRef<RendererEventHandler>();
 }
 
 void Renderer::Shutdown(){
@@ -41,4 +42,13 @@ void Renderer::Submit(const Ref<Shader>& shader, const Ref<VertexArray>& vertexA
 	shader->SetMat4("u_Model", model);
 
 	vertexArray->Draw();
+}
+
+RendererEventHandler::RendererEventHandler() {
+	SUB_EVENT(EventWindowResize, RendererEventHandler::OnWindowResize);
+}
+
+bool RendererEventHandler::OnWindowResize(EventWindowResize& e) {
+	glViewport(0, 0, e.Width, e.Height);
+	return true;
 }
