@@ -23,6 +23,8 @@ public:
 	bool OnWindowClose(EventWindowClose&);
 	bool OnWindowResize(EventWindowResize& e);
 
+	inline const WindowProps& GetWindowProps() const { return m_Props; }
+
 	void StopApplication();
 	inline static void Quit() { TRIGGER_EVENT(EventApplicationQuit); };
 	bool OnQuit(EventApplicationQuit&);
@@ -34,6 +36,7 @@ private:
 	bool m_Running, m_Minimized;
 	LayerStack m_LayerStack;
 	Ref<Window> m_Window;
+	WindowProps m_Props;
 
 	static Application *s_Instance;
 };

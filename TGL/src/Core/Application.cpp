@@ -7,11 +7,12 @@ Application* Application::s_Instance = nullptr;
 
 
 Application* Application::GetInstance() {
-	ASSERT(s_Instance, "There is not Application instance");
+	ASSERT(s_Instance, "I ain't got any Application instance");
 	return s_Instance;
 }
 
-Application::Application(const WindowProps& props) : m_Running(false), m_Minimized(false), m_LastTime(0.0f) {
+Application::Application(const WindowProps& props) 
+	: m_Running(false), m_Minimized(false), m_LastTime(0.0f), m_Props(props) {
 	Log::Init();
 	s_Instance = this;
 	m_Window = CreateRef<Window>(props);

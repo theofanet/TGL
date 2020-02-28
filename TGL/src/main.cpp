@@ -4,6 +4,7 @@
 #include <glad/glad.h>
 
 
+
 class TestLayer : public Layer {
 public:
 	TestLayer() : Layer("Test layer") {
@@ -27,7 +28,7 @@ public:
 			m_Pos.x += 0.002;
 
 		std::ostringstream title;
-		title << "Test TGL - FPS : " << (60 / ts);
+		title << Application::GetInstance()->GetWindowProps().Title << " - FPS : " << (60 / ts);
 		Application::GetInstance()->GetWindow()->SetTitle(title.str());
 	}
 
