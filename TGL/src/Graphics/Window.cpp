@@ -45,7 +45,7 @@ void Window::Init() {
 	}
 
 	m_Window = glfwCreateWindow(m_Props.Width, m_Props.Height, m_Props.Title.c_str(), nullptr, nullptr);
-
+	
 	m_Context = CreateRef<GLContext>(m_Window);
 	m_Context->Init();
 	
@@ -72,6 +72,10 @@ void Window::Init() {
 	});
 }
 
+
+void Window::SetTitle(const std::string& title){
+	glfwSetWindowTitle(m_Window, title.c_str());
+}
 
 void Window::Update() {
 	glfwPollEvents();

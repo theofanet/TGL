@@ -6,6 +6,7 @@
 #include "Core/Events.h"
 #include "Core/Layer.h"
 #include "Core/Log.h"
+#include "Core/Registry.h"
 
 #include "Graphics/Renderer.h"
 #include "Graphics/Renderer2D.h"

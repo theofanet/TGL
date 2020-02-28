@@ -13,6 +13,7 @@ IncludeDir["GLFW"] = "TGL/vendor/GLFW/include"
 IncludeDir["Glad"] = "TGL/vendor/glad/include"
 IncludeDir["glm"] = "TGL/vendor/glm"
 IncludeDir["spdlog"] = "TGL/vendor/spdlog/include"
+IncludeDir["stb_image"] = "TGL/vendor/stb_image"
 
 group "Dependencies"
 	include "TGL/vendor/GLFW"
@@ -37,7 +38,10 @@ project "TGL"
 		"%{prj.name}/src/**.h",
 		"%{prj.name}/src/**.cpp",
 		"%{IncludeDir.glm}/glm/**.hpp",
-		"%{IncludeDir.glm}/glm/**.inl"
+		"%{IncludeDir.glm}/glm/**.inl",
+		"%{IncludeDir.stb_image}/**.h",
+		"%{IncludeDir.stb_image}/**.cpp"
+
 	}
 
 	defines {
@@ -49,7 +53,8 @@ project "TGL"
 		"%{IncludeDir.spdlog}",
 		"%{IncludeDir.GLFW}",
 		"%{IncludeDir.Glad}",
-		"%{IncludeDir.glm}"
+		"%{IncludeDir.glm}",
+		"%{IncludeDir.stb_image}"
 	}
 
 	links {

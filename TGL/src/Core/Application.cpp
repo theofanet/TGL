@@ -3,13 +3,21 @@
 #include "Core/Core.h"
 
 
+Application* Application::s_Instance = nullptr;
+
+
+Application* Application::GetInstance() {
+	ASSERT(s_Instance, "There is not Application instance");
+	return s_Instance;
+}
+
 Application::Application(const WindowProps& props) : m_Running(false), m_Minimized(false), m_LastTime(0.0f) {
 	Log::Init();
-	m_Window = new Window(props);
+	s_Instance = this;
+	m_Window = CreateRef<Window>(props);
 }
 
 Application::~Application() {
-	delete m_Window;
 }
 
 void Application::Run() {

@@ -17,6 +17,8 @@ public:
 	void PushLayer(Ref<Layer> layer);
 	void PushOverlay(Ref<Layer> layer);
 
+	inline Ref<Window> GetWindow() const { return m_Window; }
+
 	// Events handlers
 	bool OnWindowClose(EventWindowClose&);
 	bool OnWindowResize(EventWindowResize& e);
@@ -25,10 +27,13 @@ public:
 	inline static void Quit() { TRIGGER_EVENT(EventApplicationQuit); };
 	bool OnQuit(EventApplicationQuit&);
 
+	static Application* GetInstance();
 
 private:
 	float m_LastTime;
 	bool m_Running, m_Minimized;
 	LayerStack m_LayerStack;
-	Window *m_Window;
+	Ref<Window> m_Window;
+
+	static Application *s_Instance;
 };

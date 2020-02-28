@@ -31,6 +31,8 @@ public:
 	~Window();
 
 	Ref<GLContext> GetContext() { return m_Context; }
+	
+	void SetTitle(const std::string& title);
 
 	void Update();
 
