@@ -6,8 +6,10 @@
 
 Ref<Renderer::Context> Renderer::s_Context = CreateRef<Renderer::Context>();
 Ref<RendererEventHandler> Renderer::s_Handler = nullptr;
+Renderer::DrawStack Renderer::s_DrawStack;
 
-void Renderer::Init(){
+
+void Renderer::Init() {
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
@@ -17,36 +19,33 @@ void Renderer::Init(){
 	s_Handler = CreateRef<RendererEventHandler>();
 }
 
-void Renderer::Shutdown(){
+void Renderer::Shutdown() {
 	Renderer2D::Shutdown();
 }
 
-void Renderer::Clear(){
+void Renderer::Clear() {
 	glClearColor(
-		s_Context->ClearColor.r, 
-		s_Context->ClearColor.g, 
-		s_Context->ClearColor.b, 
+		s_Context->ClearColor.r,
+		s_Context->ClearColor.g,
+		s_Context->ClearColor.b,
 		s_Context->ClearColor.a
 	);
 	glClear(GL_COLOR_BUFFER_BIT);
 }
 
-void Renderer::Begin(Type mode, const Ref<Camera>& camera){
+void Renderer::Begin(Type mode, Ref<Camera> camera) {
 	s_Context->Mode = mode;
 	s_Context->ViewProjectionMatrix = camera->GetViewProjectionMatrix();
+	s_DrawStack.Clear();
 }
 
-void Renderer::End(){
-
+void Renderer::End() {
+	s_DrawStack.Draw(s_Context);
+	s_DrawStack.Clear();
 }
 
-void Renderer::Submit(const Ref<Shader>& shader, const Ref<VertexArray>& vertexArray, const glm::mat4& model){
-	shader->Bind();
-
-	shader->SetMat4("u_ViewProjection", s_Context->ViewProjectionMatrix);
-	shader->SetMat4("u_Model", model);
-
-	vertexArray->Draw();
+void Renderer::Submit(Ref<Shader> shader, Ref<VertexArray> vertexArray, const glm::mat4& model, Ref<Texture> texture, int slot, const glm::vec4& color) {
+	s_DrawStack.PushStep(DrawStep(shader, vertexArray, model, texture, slot, color));
 }
 
 RendererEventHandler::RendererEventHandler() {
