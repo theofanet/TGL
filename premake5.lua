@@ -65,6 +65,11 @@ project "TGL"
 			"GL_PLATFORM_WINDOWS"
 		}
 
+    filter "system:macosx"
+        defines {
+            "GL_PLATFORM_MACOSX"
+        }
+
 	filter "configurations:Debug"
 		defines {
 			"ENABLE_ASSERTS"
