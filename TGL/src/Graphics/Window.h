@@ -2,6 +2,7 @@
 
 #include <GLFW/glfw3.h>
 #include "Core/Core.h"
+#include <glm/glm.hpp>
 
 
 struct WindowProps {
@@ -33,6 +34,7 @@ public:
 	Ref<GLContext> GetContext() { return m_Context; }
 	
 	void SetTitle(const std::string& title);
+	void SetCursorPos(const glm::vec2& position);
 
 	void Update();
 

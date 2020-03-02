@@ -5,6 +5,7 @@
 #include "Graphics/Renderer.h"
 #include "Layer.h"
 #include "IO/Keyboard.h"
+#include "IO/Mouse.h"
 
 
 class Application {

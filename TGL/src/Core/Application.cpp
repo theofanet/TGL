@@ -29,6 +29,7 @@ void Application::Run() {
 	SUB_EVENT(EventApplicationQuit, Application::OnQuit);
 
 	Keyboard::Init();
+	Mouse::Init();
 	Renderer::Init();
 
 	// main game loop

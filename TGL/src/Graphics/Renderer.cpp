@@ -30,7 +30,7 @@ void Renderer::Clear() {
 		s_Context->ClearColor.b,
 		s_Context->ClearColor.a
 	);
-	glClear(GL_COLOR_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
 void Renderer::Begin(Type mode, Ref<Camera> camera) {

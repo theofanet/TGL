@@ -22,8 +22,6 @@ public:
 	static bool IsHeld(int keycode);
 
 protected:
-	static bool SetKeyState(const std::map<int, bool>& map, int key, bool state);
-
 	static std::map<int, bool> s_KeyPressed;
 	static std::map<int, bool> s_KeyReleased;
 	static std::map<int, bool> s_KeyHeld;
@@ -31,5 +29,5 @@ protected:
 private:
 	static bool KeyState(const std::map<int, bool>& map, int key);
 
-	static Ref<KeyboardEventHandler> s_Handler;
+	static KeyboardEventHandler s_Handler;
 };
