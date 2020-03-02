@@ -5,7 +5,7 @@
 std::map<int, bool> Keyboard::s_KeyPressed;
 std::map<int, bool> Keyboard::s_KeyReleased;
 std::map<int, bool> Keyboard::s_KeyHeld;
-Ref<KeyboardEventHandler> Keyboard::s_Handler = nullptr;
+KeyboardEventHandler Keyboard::s_Handler;
 
 
 KeyboardEventHandler::KeyboardEventHandler(){
@@ -30,7 +30,6 @@ bool KeyboardEventHandler::KeyReleased(EventKeyReleased& e){
 
 
 void Keyboard::Init(){
-	s_Handler = CreateRef<KeyboardEventHandler>();
 }
 
 bool Keyboard::IsPressed(int keycode){

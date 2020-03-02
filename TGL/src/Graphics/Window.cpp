@@ -45,7 +45,7 @@ void Window::Init() {
 	}
 
 	m_Window = glfwCreateWindow(m_Props.Width, m_Props.Height, m_Props.Title.c_str(), nullptr, nullptr);
-
+	
 	m_Context = CreateRef<GLContext>(m_Window);
 	m_Context->Init();
 	
@@ -70,8 +70,36 @@ void Window::Init() {
 			break;
 		}
 	});
+
+	glfwSetMouseButtonCallback(m_Window, [](GLFWwindow* window, int button, int action, int mods) {
+		switch (action){
+		case GLFW_PRESS:
+			TRIGGER_EVENT(EventMouseButtonPress, button);
+			break;
+		case GLFW_RELEASE:
+			TRIGGER_EVENT(EventMouseButtonRelease, button);
+			break;
+		}
+	});
+
+	glfwSetCursorPosCallback(m_Window, [](GLFWwindow* window, double x, double y) {
+		TRIGGER_EVENT(EventMouseMove, (float)x, (float)y);
+	});
+
+	glfwSetScrollCallback(m_Window, [](GLFWwindow* window, double xOffset, double yOffset) {
+		TRIGGER_EVENT(EventMouseScroll, (float)xOffset, (float)yOffset);
+	});
+
 }
 
+
+void Window::SetTitle(const std::string& title){
+	glfwSetWindowTitle(m_Window, title.c_str());
+}
+
+void Window::SetCursorPos(const glm::vec2& position){
+	glfwSetCursorPos(m_Window, position.x, position.y);
+}
 
 void Window::Update() {
 	glfwPollEvents();

@@ -47,7 +47,12 @@ public:
 
 	bool OnWindowResize(EventWindowResize& e);
 
+	void RecalculateProjection();
 	void SetProjection(float left, float right, float bottom, float top);
+
+	inline float GetZoomLevel() { return m_ZoomLevel; }
+	inline void SetZoomLevel(float zoom) { m_ZoomLevel = zoom; RecalculateProjection(); }
+
 protected:
 	float m_AspectRatio, m_ZoomLevel;
 };

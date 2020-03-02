@@ -74,6 +74,29 @@ public:
 	int Keycode;
 };
 
+class EventMouseMove {
+public:
+	EventMouseMove(float x, float y) : X(x), Y(y) {}
+	float X, Y;
+};
+
+class EventMouseButtonPress {
+public:
+	EventMouseButtonPress(int button) : Button(button) {}
+	int Button;
+};
+
+class EventMouseButtonRelease {
+public:
+	EventMouseButtonRelease(int button) : Button(button) {}
+	int Button;
+};
+
+class EventMouseScroll {
+public:
+	EventMouseScroll(float x, float y) : X(x), Y(y) {}
+	float X, Y;
+};
 
 // MACROS
 #define EVENT_FN(fn) std::bind(&fn, this, std::placeholders::_1)

@@ -3,13 +3,22 @@
 #include "Core/Core.h"
 
 
-Application::Application(const WindowProps& props) : m_Running(false), m_Minimized(false), m_LastTime(0.0f) {
+Application* Application::s_Instance = nullptr;
+
+
+Application* Application::GetInstance() {
+	ASSERT(s_Instance, "I ain't got any Application instance");
+	return s_Instance;
+}
+
+Application::Application(const WindowProps& props) 
+	: m_Running(false), m_Minimized(false), m_LastTime(0.0f), m_Props(props) {
 	Log::Init();
-	m_Window = new Window(props);
+	s_Instance = this;
+	m_Window = CreateRef<Window>(props);
 }
 
 Application::~Application() {
-	delete m_Window;
 }
 
 void Application::Run() {
@@ -20,6 +29,7 @@ void Application::Run() {
 	SUB_EVENT(EventApplicationQuit, Application::OnQuit);
 
 	Keyboard::Init();
+	Mouse::Init();
 	Renderer::Init();
 
 	// main game loop

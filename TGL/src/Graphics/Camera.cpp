@@ -33,8 +33,12 @@ Camera2D::~Camera2D(){
 
 bool Camera2D::OnWindowResize(EventWindowResize& e){
 	m_AspectRatio = (float)e.Width / (float)e.Height;
-	SetProjection(-m_AspectRatio * m_ZoomLevel, m_AspectRatio * m_ZoomLevel, -m_ZoomLevel, m_ZoomLevel);
+	RecalculateProjection();
 	return true;
+}
+
+void Camera2D::RecalculateProjection(){
+	SetProjection(-m_AspectRatio * m_ZoomLevel, m_AspectRatio * m_ZoomLevel, -m_ZoomLevel, m_ZoomLevel);
 }
 
 void Camera2D::SetProjection(float left, float right, float bottom, float top){
