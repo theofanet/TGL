@@ -52,6 +52,7 @@ public:
 		if (Mouse::IsButtonPress(MOUSE_LEFT_BUTTON)) {
 			INFO("MOUSE BUTTON LEFT PRESS");
 			m_MousePosition = Mouse::GetPosition();
+			m_CamPosition = m_Cam->GetPosition() - glm::vec3(m_MousePosition.x/800.0f, m_MousePosition.y/600.0f, 0.0);
 		}
 		if (Mouse::IsButtonRelease(MOUSE_LEFT_BUTTON))
 			INFO("MOUSE BUTTON LEFT RELEASE");
@@ -63,9 +64,12 @@ public:
 			m_MouseDown = false;
 	
 		if (m_MouseDown) {
-			glm::vec2 diff = Mouse::GetPosition() - m_MousePosition;
-			m_Cam->SetPosition(m_Cam->GetPosition() + glm::vec3(-(float)diff.x * ts / 800.0, (float)diff.y * ts / 600.0, 0.0f));
+			/*glm::vec2 diff = Mouse::GetPosition() - m_MousePosition;
+			m_Cam->SetPosition(m_Cam->GetPosition() + glm::vec3(-(float)diff.x * ts / 800.0, (float)diff.y * ts / 600.0, 0.0f));*/
+			glm::vec2 pos = Mouse::GetPosition() - m_MousePosition;
+			m_Cam->SetPosition(m_Cam->GetPosition() + glm::vec3(-pos.x / 600.0, pos.y / 400.0f, 0.0f) * m_Cam->GetZoomLevel());
 		}
+		m_MousePosition = Mouse::GetPosition();
 	}
 
 	virtual inline void OnDraw() {
@@ -124,6 +128,7 @@ private:
 	float m_Margin;
 	bool m_MouseDown;
 	glm::vec2 m_MousePosition;
+	glm::vec3 m_CamPosition;
 };
 
 
