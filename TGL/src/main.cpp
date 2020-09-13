@@ -73,10 +73,7 @@ public:
 
 		// cube
 		for (unsigned int i = 0; i < 10; i++)
-		{
-			// calculate the model matrix for each object and pass it to shader before drawing
 			Renderer3D::DrawCube(cubePositions[i], m_Material, glm::vec3(.5f), m_Rot);
-		}
 		
 		// light
 		Renderer3D::DrawCube(m_Light->GetPosition(), glm::vec3(0.05f));
