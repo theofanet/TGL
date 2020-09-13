@@ -4,8 +4,8 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 
-Camera::Camera() 
-	: m_Position(glm::vec3(0.0f)), m_Rotation(glm::vec3(0.0f)),
+Camera::Camera(const glm::vec3& position)
+	: m_Position(glm::vec3(position)), m_Rotation(glm::vec3(0.0f)),
 	  m_ProjectionMatrix(glm::mat4(1.0f)), m_ViewMatrix(glm::mat4(1.0f)), m_ViewProjectionMatrix(glm::mat4(1.0f)) {
 }
 
@@ -46,4 +46,30 @@ void Camera2D::SetProjection(float left, float right, float bottom, float top){
 	m_ViewProjectionMatrix = m_ProjectionMatrix * m_ViewMatrix;
 }
 
+Camera3D::Camera3D(const glm::vec3& position) 
+	: Camera(position) {
+	m_Up = { 0.0f, 1.0f, 0.0f };
+	m_Target = { 0.0f, 0.0f, 0.0f };
+	RecalculateProjection();
+	RecalculateViewMatrix();
+	SUB_EVENT(EventWindowResize, Camera3D::OnWindowResize);
+}
+
+Camera3D::~Camera3D() {
+}
+
+bool Camera3D::OnWindowResize(EventWindowResize& e) {
+	RecalculateProjection();
+	return true;
+}
+
+void Camera3D::RecalculateProjection() {
+	m_ProjectionMatrix = glm::perspective((float)glm::radians(90.0f), 4.0f / 3.0f, 0.1f, 100.0f);
+	m_ViewProjectionMatrix = m_ProjectionMatrix * m_ViewMatrix;
+}
+
+void Camera3D::RecalculateViewMatrix(){
+	m_ViewMatrix = glm::lookAt(m_Position, m_Target, m_Up);
+	m_ViewProjectionMatrix = m_ProjectionMatrix * m_ViewMatrix;
+}
 

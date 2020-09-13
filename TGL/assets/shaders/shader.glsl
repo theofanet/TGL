@@ -13,9 +13,17 @@ void main(){
 #shader fragment
 #version 330 core
 
+struct Material {
+    vec4 color;
+    vec3 specular;
+    vec3 ambient;
+    vec3 diffuse;
+    float shininess;
+};
+
 layout(location=0) out vec4 color;
-uniform vec4 u_Color;
+uniform Material u_Material;
 
 void main(){
-	color = u_Color;
+	color = u_Material.color;
 }

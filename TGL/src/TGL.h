@@ -10,5 +10,6 @@
 
 #include "Graphics/Renderer.h"
 #include "Graphics/Renderer2D.h"
+#include "Graphics/Renderer3D.h"
 
 #include "IO/Binding.h"

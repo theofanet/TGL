@@ -13,10 +13,10 @@ Ref<Shader> Renderer2D::s_TextureShader = nullptr;
 
 void Renderer2D::Init(){
 	const std::vector<float> vertices = {
-		-0.5f,  0.5f, 0.0f, 0.0f, 1.0f,
-		 0.5f,  0.5f, 0.0f, 1.0f, 1.0f, 
-		 0.5f, -0.5f, 0.0f, 1.0f, 0.0f,
-		-0.5f, -0.5f, 0.0f, 0.0f, 0.0f
+		-0.5f,  0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, -1.0f,
+		 0.5f,  0.5f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f, -1.0f,
+		 0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, -1.0f,
+		-0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, -1.0f
 	};
 
 	const std::vector<uint32_t> indices = { 0, 1, 3, 3, 1, 2 };
@@ -24,6 +24,7 @@ void Renderer2D::Init(){
 	Ref<VertexBuffer> vb = VertexBuffer::Create(vertices);
 	vb->AddAttrib(3, GL_FLOAT); // x y z
 	vb->AddAttrib(2, GL_FLOAT); // u v
+	vb->AddAttrib(3, GL_FLOAT); // normals x y z
 
 	Ref<IndexBuffer> ib = IndexBuffer::Create(indices);
 
@@ -49,7 +50,11 @@ void Renderer2D::DrawQuad(const glm::vec2& position, const glm::vec2& size, cons
 		* glm::rotate(glm::mat4(1.0f), rotation, { 0.0f, 0.0f, 1.0f })
 		* glm::scale(glm::mat4(1.0f), { size.x, size.y, 1.0f });
 
-	Renderer::Submit(s_BasicShader, s_VA, model, nullptr, 0, color);
+	Ref<Material> material = CreateRef<Material>();
+	material->SetAmbientMap(Renderer::GetWhiteTexture());
+	material->SetColor(color);
+
+	Renderer::Submit(s_TextureShader, s_VA, model, material);
 }
 
 void Renderer2D::DrawQuad(const std::string& texturePath, const glm::vec2& position, const glm::vec2& size, const glm::vec4& color, float rotation){
@@ -57,7 +62,11 @@ void Renderer2D::DrawQuad(const std::string& texturePath, const glm::vec2& posit
 		* glm::rotate(glm::mat4(1.0f), rotation, { 0.0f, 0.0f, 1.0f })
 		* glm::scale(glm::mat4(1.0f), { size.x, size.y, 1.0f });
 
-	Renderer::Submit(s_TextureShader, s_VA, model, Registry::GetTexture(texturePath), 0, color);
+	Ref<Material> material = CreateRef<Material>();
+	material->SetAmbientMap(Registry::GetTexture(texturePath));
+	material->SetColor(color);
+
+	Renderer::Submit(s_TextureShader, s_VA, model, material);
 }
 
 

@@ -6,7 +6,7 @@
 
 class Camera {
 public:
-	Camera();
+	Camera(const glm::vec3& position = glm::vec3());
 	virtual ~Camera();
 
 	inline virtual const glm::vec3& GetPosition() { return m_Position; }
@@ -55,4 +55,19 @@ public:
 
 protected:
 	float m_AspectRatio, m_ZoomLevel;
+};
+
+class Camera3D : public Camera {
+public:
+	Camera3D(const glm::vec3& position=glm::vec3());
+	virtual ~Camera3D();
+
+	inline virtual void SetTarget(const glm::vec3& target) { m_Target = target; RecalculateViewMatrix(); }
+
+	bool OnWindowResize(EventWindowResize& e);
+	virtual void RecalculateProjection();
+	virtual void RecalculateViewMatrix();
+
+protected:
+	glm::vec3 m_Target, m_Up;
 };
