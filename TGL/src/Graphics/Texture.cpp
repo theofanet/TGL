@@ -7,6 +7,17 @@ Ref<Texture> Texture::Create(const std::string& filePath){
 	return CreateRef<Texture>(filePath);
 }
 
+Ref<Texture> Texture::Create(uint32_t width, uint32_t height) {
+	return CreateRef<Texture>(width, height);
+}
+
+Texture::Texture(uint32_t width, uint32_t height) : m_Width(width), m_Height(height) {
+	m_InternalFormat = GL_RGBA8;
+	m_DataFormat = GL_RGBA;
+
+	CreateGLImage();
+}
+
 Texture::Texture(const std::string& filePath)
 	: m_InternalFormat(0), m_DataFormat(0) {
 	int width, height, channels;
@@ -53,4 +64,10 @@ void Texture::CreateGLImage(){
 
 	glTextureParameteri(m_ID, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTextureParameteri(m_ID, GL_TEXTURE_WRAP_T, GL_REPEAT);
+}
+
+void Texture::SetData(void* data, uint32_t size) {
+	uint32_t bpp = m_DataFormat == GL_RGBA ? 4 : 3;
+	ASSERT(size == m_Width * m_Height * bpp, "Data must be entire Texture !");
+	glTextureSubImage2D(m_ID, 0, 0, 0, m_Width, m_Height, m_DataFormat, GL_UNSIGNED_BYTE, data);
 }

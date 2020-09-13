@@ -16,6 +16,10 @@ Application::Application(const WindowProps& props)
 	Log::Init();
 	s_Instance = this;
 	m_Window = CreateRef<Window>(props);
+
+	Keyboard::Init();
+	Mouse::Init();
+	Renderer::Init();
 }
 
 Application::~Application() {
@@ -27,10 +31,6 @@ void Application::Run() {
 	SUB_EVENT(EventWindowClose, Application::OnWindowClose);
 	SUB_EVENT(EventWindowResize, Application::OnWindowResize);
 	SUB_EVENT(EventApplicationQuit, Application::OnQuit);
-
-	Keyboard::Init();
-	Mouse::Init();
-	Renderer::Init();
 
 	// main game loop
 	while (m_Running) {

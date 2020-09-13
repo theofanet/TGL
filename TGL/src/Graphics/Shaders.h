@@ -33,7 +33,12 @@ public:
 	void SetFloat(const std::string& name, float value1, float value2, float value3);
 	void SetFloat(const std::string& name, float value1, float value2, float value3, float value4);
 
-	void SetMat4(const std::string& name, glm::mat4 value);
+	inline void SetFloat(const std::string& name, const glm::vec2& value) { SetFloat(name, value.x, value.y); }
+	inline void SetFloat(const std::string& name, const glm::vec3& value) { SetFloat(name, value.x, value.y, value.z); }
+	inline void SetFloat(const std::string& name, const glm::vec4& value) { SetFloat(name, value.x, value.y, value.z, value.w); }
+
+	void SetMat4(const std::string& name, const glm::mat4& value);
+	void SetMat3(const std::string& name, const glm::mat3& value);
 
 private:
 	int GetUniformLocation(const std::string& name);

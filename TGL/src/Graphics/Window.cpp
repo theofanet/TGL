@@ -45,6 +45,8 @@ void Window::Init() {
 	}
 
 	m_Window = glfwCreateWindow(m_Props.Width, m_Props.Height, m_Props.Title.c_str(), nullptr, nullptr);
+
+	glfwWindowHint(GLFW_SAMPLES, 4);
 	
 	m_Context = CreateRef<GLContext>(m_Window);
 	m_Context->Init();
