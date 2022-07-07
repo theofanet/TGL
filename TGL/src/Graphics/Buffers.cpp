@@ -52,4 +52,5 @@ uint32_t GetTypeSize(GLenum type) {
 	}
 
 	ASSERT(false, "GetTypeSize: Type {0} not supported", type);
+	return 0;
 }

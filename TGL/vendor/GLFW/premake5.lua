@@ -1,6 +1,6 @@
-project "GLFW"
+project "GLFW" 
     flags { 'NoPCH' }
-
+    
     kind "StaticLib"
     language "C"
     staticruntime "on"
@@ -12,27 +12,12 @@ project "GLFW"
 	{
         "include/GLFW/glfw3.h",
         "include/GLFW/glfw3native.h",
-        "src/glfw_config.h",
         "src/context.c",
         "src/init.c",
         "src/input.c",
         "src/monitor.c",
-        "src/vulkan.c",
-        "src/window.c"
+        "src/window.c",
     }
-
-    links{
-		"dl",
-		"m",
-		"GL",
-		"GLU",
-		"X11",
-		"Xinerama",
-		"Xi",
-		"Xcursor",
-		"Xxf86vm",
-		"pthread"
-	}   
 
     filter "system:macosx"
 		pic "On"
@@ -47,7 +32,12 @@ project "GLFW"
 			"src/cocoa_monitor.m",
 			"src/cocoa_platform.h",
 			"src/cocoa_time.c",
-			"src/cocoa_window.m"
+			"src/cocoa_window.m",
+            "src/nsgl_context.m",
+            "src/egl_context.c",
+            "src/osmesa_context.c",
+            "src/vulkan.c",
+            "src/posix_thread.c"
 		}
 
 		defines
@@ -57,6 +47,7 @@ project "GLFW"
 
 		links
 		{
+            "OpenGL.framework",
 			"CoreFoundation.framework",
 			"Cocoa.framework",
 			"IOKit.framework",

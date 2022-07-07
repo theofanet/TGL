@@ -2,6 +2,8 @@
 #include "Application.h"
 #include "Core/Core.h"
 
+#include <filesystem>
+
 
 Application* Application::s_Instance = nullptr;
 
@@ -23,7 +25,7 @@ Application::~Application() {
 
 void Application::Run() {
 	m_Running = true;
-
+	
 	SUB_EVENT(EventWindowClose, Application::OnWindowClose);
 	SUB_EVENT(EventWindowResize, Application::OnWindowResize);
 	SUB_EVENT(EventApplicationQuit, Application::OnQuit);

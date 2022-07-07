@@ -75,7 +75,7 @@ public:
 			for (int x = 0; x < 40; x++) {
 				int i = x * y + x;
 				Renderer2D::DrawQuad(
-					"grass.png",
+					"rock.jpg",
 					{ x * (0.1 + m_Margin), y * (0.1 + m_Margin) },
 					{ 0.1, 0.1 }
 				);
@@ -131,6 +131,5 @@ int main(int argc, char* argv[]) {
 	Application app(WindowProps("Test TGL", 800, 600));
 	app.PushLayer(CreateRef<TestLayer>());
 	app.Run();
-
 	return 0;
 }

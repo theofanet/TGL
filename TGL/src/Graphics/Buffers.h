@@ -3,7 +3,7 @@
 #include <glad/glad.h>
 #include <vector>
 
-#include "Core/Core.h";
+#include "Core/Core.h"
 
 
 
@@ -35,7 +35,7 @@ public:
 		uint32_t size;
 		GLenum type;
 		bool normalized;
-		uint32_t offset;
+		size_t offset;
 	};
 
 	static Ref<VertexBuffer> Create(const std::vector<float>& vertices);

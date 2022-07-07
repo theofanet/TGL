@@ -60,4 +60,5 @@ inline std::string ShaderTypeToString(uint32_t type) {
 	}
 
 	ASSERT(false, "ShaderTypeToString: Shader type not usable");
+	return "";
 }

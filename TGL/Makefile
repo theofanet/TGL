@@ -30,7 +30,7 @@ endif
 PCH = src/tglpch.h
 PCH_PLACEHOLDER = $(OBJDIR)/$(notdir $(PCH))
 GCH = $(PCH_PLACEHOLDER).gch
-INCLUDES += -Isrc -Ivendor/spdlog/include -Ivendor/GLFW/include -Ivendor/glad/include -Ivendor/glm
+INCLUDES += -Isrc -Ivendor/spdlog/include -Ivendor/glfw/include -Ivendor/glad/include -Ivendor/glm -Ivendor/stb_image
 FORCE_INCLUDE +=
 ALL_CPPFLAGS += $(CPPFLAGS) -MMD -MP $(DEFINES) $(INCLUDES)
 ALL_RESFLAGS += $(RESFLAGS) $(DEFINES) $(INCLUDES)
@@ -50,8 +50,8 @@ OBJDIR = ../bin-int/Debug-macosx-x86_64/TGL
 DEFINES += -D_CRT_SECURE_NO_WARNINGS -DGL_PLATFORM_MACOSX -DENABLE_ASSERTS
 ALL_CFLAGS += $(CFLAGS) $(ALL_CPPFLAGS) -m64 -g
 ALL_CXXFLAGS += $(CXXFLAGS) $(ALL_CPPFLAGS) -m64 -g -std=c++17
-LIBS += vendor/GLFW/bin/Debug-macosx-x86_64/GLFW/libGLFW.a vendor/Glad/bin/Debug-macosx-x86_64/Glad/libGlad.a -lopengl32.lib
-LDDEPS += vendor/GLFW/bin/Debug-macosx-x86_64/GLFW/libGLFW.a vendor/Glad/bin/Debug-macosx-x86_64/Glad/libGlad.a
+LIBS += vendor/glfw/bin/Debug-macosx-x86_64/GLFW/libGLFW.a vendor/Glad/bin/Debug-macosx-x86_64/Glad/libGlad.a -framework CoreFoundation -framework Cocoa -framework IOKit -framework CoreVideo -framework OpenGL
+LDDEPS += vendor/glfw/bin/Debug-macosx-x86_64/GLFW/libGLFW.a vendor/Glad/bin/Debug-macosx-x86_64/Glad/libGlad.a
 
 else ifeq ($(config),release)
 TARGETDIR = ../bin/Release-macosx-x86_64/TGL
@@ -60,8 +60,8 @@ OBJDIR = ../bin-int/Release-macosx-x86_64/TGL
 DEFINES += -D_CRT_SECURE_NO_WARNINGS -DGL_PLATFORM_MACOSX
 ALL_CFLAGS += $(CFLAGS) $(ALL_CPPFLAGS) -m64 -O2
 ALL_CXXFLAGS += $(CXXFLAGS) $(ALL_CPPFLAGS) -m64 -O2 -std=c++17
-LIBS += vendor/GLFW/bin/Release-macosx-x86_64/GLFW/libGLFW.a vendor/Glad/bin/Release-macosx-x86_64/Glad/libGlad.a -lopengl32.lib
-LDDEPS += vendor/GLFW/bin/Release-macosx-x86_64/GLFW/libGLFW.a vendor/Glad/bin/Release-macosx-x86_64/Glad/libGlad.a
+LIBS += vendor/glfw/bin/Release-macosx-x86_64/GLFW/libGLFW.a vendor/Glad/bin/Release-macosx-x86_64/Glad/libGlad.a -framework CoreFoundation -framework Cocoa -framework IOKit -framework CoreVideo -framework OpenGL
+LDDEPS += vendor/glfw/bin/Release-macosx-x86_64/GLFW/libGLFW.a vendor/Glad/bin/Release-macosx-x86_64/Glad/libGlad.a
 
 else
   $(error "invalid configuration $(config)")
@@ -83,11 +83,15 @@ OBJECTS += $(OBJDIR)/Camera.o
 OBJECTS += $(OBJDIR)/Keyboard.o
 OBJECTS += $(OBJDIR)/Layer.o
 OBJECTS += $(OBJDIR)/Log.o
+OBJECTS += $(OBJDIR)/Mouse.o
+OBJECTS += $(OBJDIR)/Registry.o
 OBJECTS += $(OBJDIR)/Renderer.o
 OBJECTS += $(OBJDIR)/Renderer2D.o
 OBJECTS += $(OBJDIR)/Shaders.o
+OBJECTS += $(OBJDIR)/Texture.o
 OBJECTS += $(OBJDIR)/Window.o
 OBJECTS += $(OBJDIR)/main.o
+OBJECTS += $(OBJDIR)/stb_image.o
 OBJECTS += $(OBJDIR)/tglpch.o
 
 # Rules
@@ -159,6 +163,9 @@ $(OBJDIR)/Layer.o: src/Core/Layer.cpp
 $(OBJDIR)/Log.o: src/Core/Log.cpp
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) -include $(PCH_PLACEHOLDER) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
+$(OBJDIR)/Registry.o: src/Core/Registry.cpp
+	@echo $(notdir $<)
+	$(SILENT) $(CXX) -include $(PCH_PLACEHOLDER) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/Arrays.o: src/Graphics/Arrays.cpp
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) -include $(PCH_PLACEHOLDER) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
@@ -177,16 +184,25 @@ $(OBJDIR)/Renderer2D.o: src/Graphics/Renderer2D.cpp
 $(OBJDIR)/Shaders.o: src/Graphics/Shaders.cpp
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) -include $(PCH_PLACEHOLDER) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
+$(OBJDIR)/Texture.o: src/Graphics/Texture.cpp
+	@echo $(notdir $<)
+	$(SILENT) $(CXX) -include $(PCH_PLACEHOLDER) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/Window.o: src/Graphics/Window.cpp
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) -include $(PCH_PLACEHOLDER) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/Keyboard.o: src/IO/Keyboard.cpp
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) -include $(PCH_PLACEHOLDER) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
+$(OBJDIR)/Mouse.o: src/IO/Mouse.cpp
+	@echo $(notdir $<)
+	$(SILENT) $(CXX) -include $(PCH_PLACEHOLDER) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/main.o: src/main.cpp
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) -include $(PCH_PLACEHOLDER) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/tglpch.o: src/tglpch.cpp
+	@echo $(notdir $<)
+	$(SILENT) $(CXX) -include $(PCH_PLACEHOLDER) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
+$(OBJDIR)/stb_image.o: vendor/stb_image/stb_image.cpp
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) -include $(PCH_PLACEHOLDER) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 

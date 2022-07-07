@@ -15,6 +15,7 @@ public:
 	inline const uint32_t GetHeight() { return m_Height; }
 
 	void Bind(uint32_t slot) const;
+	void Unbind() const;
 
 private:
 	void CreateGLImage();

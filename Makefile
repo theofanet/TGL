@@ -33,7 +33,7 @@ Dependencies: GLFW Glad
 GLFW:
 ifneq (,$(GLFW_config))
 	@echo "==== Building GLFW ($(GLFW_config)) ===="
-	@${MAKE} --no-print-directory -C TGL/vendor/GLFW -f Makefile config=$(GLFW_config)
+	@${MAKE} --no-print-directory -C TGL/vendor/glfw -f Makefile config=$(GLFW_config)
 endif
 
 Glad:
@@ -49,7 +49,7 @@ ifneq (,$(TGL_config))
 endif
 
 clean:
-	@${MAKE} --no-print-directory -C TGL/vendor/GLFW -f Makefile clean
+	@${MAKE} --no-print-directory -C TGL/vendor/glfw -f Makefile clean
 	@${MAKE} --no-print-directory -C TGL/vendor/Glad -f Makefile clean
 	@${MAKE} --no-print-directory -C TGL -f Makefile clean
 

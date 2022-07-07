@@ -29,7 +29,8 @@ Texture::Texture(const std::string& filePath)
 
 	CreateGLImage();
 
-	glTextureSubImage2D(m_ID, 0, 0, 0, m_Width, m_Height, m_DataFormat, GL_UNSIGNED_BYTE, data);
+	glTexImage2D(GL_TEXTURE_2D, 0, m_InternalFormat, m_Width, m_Height, 0, m_DataFormat, GL_UNSIGNED_BYTE, data);
+	glBindTexture(GL_TEXTURE_2D, 0);
 
 	stbi_image_free(data);
 }
@@ -39,18 +40,24 @@ Texture::~Texture(){
 }
 
 void Texture::Bind(uint32_t slot) const{
-	glBindTextureUnit(slot, m_ID);
+	glActiveTexture(GL_TEXTURE0 + slot);
+	glBindTexture(GL_TEXTURE_2D, m_ID);
+}
+
+void Texture::Unbind() const {
+	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 void Texture::CreateGLImage(){
 	ASSERT(m_InternalFormat & m_DataFormat, "Texture format not supported");
 
-	glCreateTextures(GL_TEXTURE_2D, 1, &m_ID);
-	glTextureStorage2D(m_ID, 1, m_InternalFormat, m_Width, m_Height);
+	glGenTextures(1, &m_ID);
+	glBindTexture(GL_TEXTURE_2D, m_ID);
+	//glTexStorage2D(m_ID, 1, m_InternalFormat, m_Width, m_Height);
 	
-	glTextureParameteri(m_ID, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTextureParameteri(m_ID, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
-	glTextureParameteri(m_ID, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTextureParameteri(m_ID, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 }

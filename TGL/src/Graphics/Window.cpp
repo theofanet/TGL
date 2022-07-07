@@ -1,8 +1,6 @@
 #include "tglpch.h"
 #include "Window.h"
 
-#include <glad/glad.h>
-
 #include "Core/Core.h"
 #include "Core/Events.h"
 
@@ -39,6 +37,12 @@ Window::~Window() {
 void Window::Init() {
 	if (!s_GLFWInitialized) {
 		int success = glfwInit();
+		
+		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
+		glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_COMPAT_PROFILE);
+
 		ASSERT(success, "Unable to initialize GLFW");
 		glfwSetErrorCallback(GLFWErrorCallback);
 		s_GLFWInitialized = true;

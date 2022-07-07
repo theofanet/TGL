@@ -13,3 +13,4 @@ bin-int/
 **.vcxproj.filters
 **.vcxproj.user
 
+.DS_Store
