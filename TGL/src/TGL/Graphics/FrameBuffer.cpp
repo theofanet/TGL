@@ -4,8 +4,19 @@
 #include "TGL/Core/Application.h"
 
 
+Ref<FrameBuffer> FrameBuffer::Create(const FrameBufferProps& props){
+	return CreateRef<FrameBuffer>(props);
+}
+
+Ref<FrameBuffer> FrameBuffer::Create(uint32_t width, uint32_t height){
+	FrameBufferProps props;
+	props.Width = width;
+	props.Height = height;
+	return Create(props);
+}
+
 FrameBuffer::FrameBuffer(const FrameBufferProps& props) : m_Props(props) {
-	Create();
+	CreateTextures();
 }
 
 FrameBuffer::~FrameBuffer(){
@@ -22,10 +33,10 @@ void const FrameBuffer::Bind() {
 void const FrameBuffer::Unbind() { 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	Application* app = Application::GetInstance();
-	glViewport(0, 0, app->GetWindow()->GetWidth(), app->GetWindow()->GetHeight());
+	//glViewport(0, 0, app->GetWindow()->GetWidth(), app->GetWindow()->GetHeight());
 }
 
-void FrameBuffer::Create(){
+void FrameBuffer::CreateTextures(){
 	if (m_ID) {
 		glDeleteFramebuffers(1, &m_ID);
 		glDeleteTextures(1, &m_TextureID);
@@ -57,5 +68,5 @@ void FrameBuffer::Create(){
 void FrameBuffer::Resize(uint32_t width, uint32_t height){
 	m_Props.Width = width;
 	m_Props.Height = height;
-	Create();
+	CreateTextures();
 }

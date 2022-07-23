@@ -15,10 +15,14 @@ public:
 	virtual void OnGuiDraw();
 
 	bool OnScroll(EventMouseScroll& e);
-
+	bool OnEvent(Event& e);
 private:
 	Ref<Camera2D> m_Cam;
-	bool m_MouseDown;
+	Ref<FrameBuffer> m_FrameBuffer;
+	glm::vec2 m_ViewportSize;
+
+	bool m_MouseDown, m_ViewPortHovered;
 	glm::vec2 m_MousePosition;
+	
 	float m_StatsFPS;
 };

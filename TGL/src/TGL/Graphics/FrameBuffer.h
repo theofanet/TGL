@@ -13,6 +13,9 @@ struct FrameBufferProps {
 
 class FrameBuffer {
 public:
+	static Ref<FrameBuffer> Create(const FrameBufferProps& props);
+	static Ref<FrameBuffer> Create(uint32_t width, uint32_t height);
+
 	FrameBuffer(const FrameBufferProps& props);
 	virtual ~FrameBuffer();
 
@@ -22,7 +25,7 @@ public:
 	inline const GLuint GetTextureID() { return m_TextureID; }
 	inline const FrameBufferProps& GetProps() { return m_Props; }
 
-	void Create();
+	void CreateTextures();
 	void Resize(uint32_t width, uint32_t height);
 
 protected:

@@ -18,6 +18,11 @@ protected:
 	std::string m_Name;
 };
 
+class ImGuiLayer : public Layer {
+public:
+	ImGuiLayer(const std::string& name = "Gui") : Layer(name) {}
+};
+
 
 class LayerStack {
 public:

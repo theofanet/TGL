@@ -48,7 +48,7 @@ struct Renderer2DData {
 	std::array<Ref<Texture>, MaxTextureSlots> TextureSlots;
 	uint32_t TextureSlotIndex = 1;
 	
-	glm::mat4 CameraProjectionMatrix = glm::mat4(0.0f);
+	glm::mat4 CameraViewProjectionMatrix;
 };
 
 static Renderer2DData s_Data;
@@ -130,8 +130,7 @@ void Renderer2D::Shutdown(){
 }
 
 void Renderer2D::Begin(Ref<Camera> camera) {
-	TRACE("CAM :{} {}", camera->GetPosition().x, camera->GetPosition().y);
-	s_Data.CameraProjectionMatrix = camera->GetProjectionMatrix();
+	s_Data.CameraViewProjectionMatrix = camera->GetViewProjectionMatrix();
 
 	s_Data.QuadIndexCount = 0;
 	s_Data.VertexBufferPtr = s_Data.VertexBufferBase;
@@ -147,7 +146,6 @@ void Renderer2D::End() {
 }
 
 void Renderer2D::Flush() {
-
 	if (s_Data.QuadIndexCount > 0) {
 		for (uint32_t i = 0; i < s_Data.TextureSlotIndex; i++)
 			s_Data.TextureSlots[i]->Bind(i);
@@ -155,7 +153,7 @@ void Renderer2D::Flush() {
 		uint32_t dataSize = (uint32_t)((uint8_t*)s_Data.VertexBufferPtr - (uint8_t*)s_Data.VertexBufferBase);
 		s_QuadsVB->SetData(s_Data.VertexBufferBase, dataSize);
 		s_BatchShader->Bind();
-		s_BatchShader->SetMat4("u_ViewProjection", s_Data.CameraProjectionMatrix);
+		s_BatchShader->SetMat4("u_ViewProjection", s_Data.CameraViewProjectionMatrix);
 		s_QuadsVA->Draw(s_Data.QuadIndexCount);
 		s_StatsDrawCalls++;
 	}
@@ -164,7 +162,7 @@ void Renderer2D::Flush() {
 		uint32_t dataSize = (uint32_t)((uint8_t*)s_Data.LineVertexBufferPtr - (uint8_t*)s_Data.LineVertexBufferBase);
 		s_LinesVB->SetData(s_Data.LineVertexBufferBase, dataSize);
 		s_LineShader->Bind();
-		s_LineShader->SetMat4("u_ViewProjection", s_Data.CameraProjectionMatrix);
+		s_LineShader->SetMat4("u_ViewProjection", s_Data.CameraViewProjectionMatrix);
 		Renderer::SetLineWidth(2.0f);
 		Renderer::DrawVertexArray(s_LinesVA, s_Data.LineVertexCount, GL_LINES);
 		s_StatsDrawCalls++;
@@ -225,6 +223,9 @@ void Renderer2D::DrawQuad(const std::string& texturePath, const glm::vec3& posit
 	}
 
 	if (textureIndex == 0.0f) {
+		if (s_Data.TextureSlotIndex >= Renderer2DData::MaxTextureSlots)
+			FlushAndReset();
+
 		textureIndex = (float)s_Data.TextureSlotIndex;
 		s_Data.TextureSlots[s_Data.TextureSlotIndex] = texture;
 		s_Data.TextureSlotIndex++;

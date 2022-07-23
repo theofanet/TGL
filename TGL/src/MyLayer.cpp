@@ -8,6 +8,8 @@ MyLayer::MyLayer() : Layer("3D Tests") {
 	float aspectRatio = Application::GetInstance()->GetWindowProps().Width / Application::GetInstance()->GetWindowProps().Height;
 	m_Cam = CreateRef<Camera2D>(aspectRatio);
 	m_StatsFPS = 0.0f;
+	m_ViewPortHovered = false;
+	m_ViewportSize = { 1280, 720 };
 }
 
 MyLayer::~MyLayer() {
@@ -18,10 +20,22 @@ void MyLayer::OnAttach() {
 	Registry::SetTexturePathPrefix("assets/textures/");
 
 	SUB_EVENT(EventMouseScroll, MyLayer::OnScroll);
+	ON_EVENT(MyLayer::OnEvent);
+
 	m_MousePosition = Mouse::GetPosition();
+
+	m_Cam->SetPosition(glm::vec3(0.0f));
+	m_Cam->SetZoomLevel(6.0f);
+
+	m_FrameBuffer = FrameBuffer::Create(1280, 720);
 }
 
 void MyLayer::OnUpdate(float ts) {
+	FrameBufferProps props = m_FrameBuffer->GetProps();
+	if (props.Height != m_ViewportSize.y || props.Width != m_ViewportSize.x) {
+		m_FrameBuffer->Resize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
+		m_Cam->OnResize(m_ViewportSize.x, m_ViewportSize.y);
+	}
 
 	if (Mouse::IsButtonHeld(MOUSE_LEFT_BUTTON))
 		m_MouseDown = true;
@@ -39,6 +53,8 @@ void MyLayer::OnUpdate(float ts) {
 }
 
 void MyLayer::OnDraw() {
+	m_FrameBuffer->Bind();
+
 	Renderer::Clear();
 	Renderer2D::ResetStats();
 
@@ -58,9 +74,13 @@ void MyLayer::OnDraw() {
 	}
 
 	Renderer2D::End();
+	m_FrameBuffer->Unbind();
 }
 
 void MyLayer::OnGuiDraw() {
+	bool workspaceOpen = true;
+	ImGuiRenderer::StartWorkspace(workspaceOpen);
+
 	ImGui::Begin("Renderer2D Stats");
 	ImGui::Text("FPS : %.2f", m_StatsFPS);
 	ImGui::Text("Draw calls : %d", Renderer2D::s_StatsDrawCalls);
@@ -68,6 +88,18 @@ void MyLayer::OnGuiDraw() {
 	ImGui::Text("Vertices : %d", Renderer2D::s_StatsQuads * 4);
 	ImGui::Text("Indices : %d", Renderer2D::s_StatsQuads * 6);
 	ImGui::End();
+
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{ 0, 0 });
+	ImGui::Begin("Viewport");
+	m_ViewPortHovered = ImGui::IsWindowFocused();
+	ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
+	m_ViewportSize = { viewportPanelSize.x, viewportPanelSize.y };
+	uint64_t textureID = m_FrameBuffer->GetTextureID();
+	ImGui::Image(reinterpret_cast<void*>(textureID), ImVec2{ m_ViewportSize.x, m_ViewportSize.y }, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
+	ImGui::End();
+	ImGui::PopStyleVar();
+
+	ImGuiRenderer::EndWorkSpace();
 }
 
 bool MyLayer::OnScroll(EventMouseScroll& e) {
@@ -75,5 +107,16 @@ bool MyLayer::OnScroll(EventMouseScroll& e) {
 	z -= e.Y * 0.25;
 	z = std::max(z, 0.25f);
 	m_Cam->SetZoomLevel(z);
+	return true;
+}
+
+bool MyLayer::OnEvent(Event& e) {
+	ImGuiIO& io = ImGui::GetIO();
+	
+	if (io.WantCaptureMouse && e.Category == EventCategory::Mouse)
+		return m_ViewPortHovered;
+	else if (io.WantCaptureKeyboard && e.Category == EventCategory::Keyboard)
+		return m_ViewPortHovered;
+
 	return true;
 }

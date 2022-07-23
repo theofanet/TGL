@@ -45,7 +45,7 @@ public:
 	Camera2D(float aspectRatio, float zoomLevel = 1.0f);
 	virtual ~Camera2D();
 
-	bool OnWindowResize(EventWindowResize& e);
+	void OnResize(float width, float height);
 
 	void RecalculateProjection();
 	void SetProjection(float left, float right, float bottom, float top);

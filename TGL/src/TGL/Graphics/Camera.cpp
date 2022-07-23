@@ -25,16 +25,14 @@ void Camera::RecalculateViewMatrix(){
 Camera2D::Camera2D(float aspectRatio, float zoomLevel) 
 	: Camera(), m_AspectRatio(aspectRatio), m_ZoomLevel(zoomLevel){
 	SetProjection(-m_AspectRatio * m_ZoomLevel, m_AspectRatio * m_ZoomLevel, -m_ZoomLevel, m_ZoomLevel);
-	SUB_EVENT(EventWindowResize, Camera2D::OnWindowResize);
 }
 
 Camera2D::~Camera2D(){
 }
 
-bool Camera2D::OnWindowResize(EventWindowResize& e){
-	m_AspectRatio = (float)e.Width / (float)e.Height;
+void Camera2D::OnResize(float width, float height){
+	m_AspectRatio = width / height;
 	RecalculateProjection();
-	return true;
 }
 
 void Camera2D::RecalculateProjection(){

@@ -6,7 +6,7 @@
 
 
 int main(int argc, char* argv[]) {
-	Application app(WindowProps("Test TGL", 800, 600));
+	Application app(WindowProps("Test TGL", 1280, 720));
 	app.PushLayer(CreateRef<MyLayer>());
 	app.Run();
 
