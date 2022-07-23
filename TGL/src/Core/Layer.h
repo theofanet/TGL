@@ -13,6 +13,7 @@ public:
 	virtual void OnDettach() {};
 	virtual void OnUpdate(float ts) {};
 	virtual void OnDraw() {};
+	virtual void OnGuiDraw() {};
 protected:
 	std::string m_Name;
 };

@@ -74,12 +74,12 @@ public:
 		}
 	};
 
-	typedef std::map<Ref<Shader>, std::map<Ref<Material>, std::vector<DrawStep>>> DrawStackType;
+	typedef std::map<Ref<Shader>, std::vector<DrawStep>> DrawStackType;
 
 	class DrawStack {
 	public:
 		inline void PushStep(const DrawStep& s) {
-			m_Stack[s.shader][s.material].push_back(s);
+			m_Stack[s.shader].push_back(s);
 		}
 
 		inline void Clear() { m_Stack.clear(); }
@@ -110,23 +110,22 @@ public:
 				}
 
 				for (auto& tv : st.second) {
-					tv.first->GetAmbientMap()->Bind(0);
+					tv.material->GetAmbientMap()->Bind(0);
 					st.first->SetInt("u_Material.diffuseMap", 0);
 
-					tv.first->GetSpecularMap()->Bind(1);
+					tv.material->GetSpecularMap()->Bind(1);
 					st.first->SetInt("u_Material.specularMap", 1);
 
-					st.first->SetFloat("u_Material.color", tv.first->GetColor());
-					st.first->SetFloat("u_Material.ambient", tv.first->GetAmbient());
-					st.first->SetFloat("u_Material.diffuse", tv.first->GetDiffuse());
-					st.first->SetFloat("u_Material.shininess", tv.first->GetShininess());
-					st.first->SetFloat("u_Material.specular", tv.first->GetSpecular());
+					st.first->SetFloat("u_Material.color", tv.material->GetColor());
+					st.first->SetFloat("u_Material.ambient", tv.material->GetAmbient());
+					st.first->SetFloat("u_Material.diffuse", tv.material->GetDiffuse());
+					st.first->SetFloat("u_Material.shininess", tv.material->GetShininess());
+					st.first->SetFloat("u_Material.specular", tv.material->GetSpecular());
 
-					for (auto& step : tv.second) {
-						st.first->SetMat4("u_Model", step.model);
-						step.va->Draw();
-					}
+					st.first->SetMat4("u_Model", tv.model);
+					tv.va->Draw();
 				}
+				st.first->Unbind();
 			}
 		}
 

@@ -19,7 +19,7 @@ void main(){
     Normal = mat3(transpose(inverse(u_Model))) * a_Normal;  
     FragPosition = vec3(u_Model * vec4(a_Position, 1.0));
     ViewPosition = u_ViewPosition;
-	gl_Position = u_ViewProjection * u_Model * vec4(a_Position, 1.0);
+	gl_Position = u_ViewProjection * vec4(FragPosition, 1.0);
 }
 
 #shader fragment
@@ -63,9 +63,8 @@ in vec3 ViewPosition;
 
 
 void main(){
-    vec3 textColor = texture(u_Material.diffuseMap, v_TexCoord).rgb;
-
-    vec3 materialSpecular = texture(u_Material.specularMap, v_TexCoord).rgb;
+    vec3 textColor = texture(u_Material.diffuseMap, v_TexCoord).rgb * u_Material.color.rgb * u_Material.ambient.rgb;
+    vec3 materialSpecular = texture(u_Material.specularMap, v_TexCoord).rgb * u_Material.specular.rgb;
 
     vec3 norm = normalize(Normal);
     vec3 viewDir = normalize(ViewPosition - FragPosition);
@@ -84,7 +83,7 @@ void main(){
         else{
             lightDir = normalize(u_Light[i].position - FragPosition);
             float distance = length(u_Light[i].position - FragPosition);
-            attenuation = 1.0 / (u_Light[i].constant + u_Light[i].linear * distance + u_Light[i].quadratic * (distance * distance));    
+            attenuation = 1.0 / (u_Light[i].constant + u_Light[i].linear * distance + u_Light[i].quadratic * (distance * distance));  
         }
                 
         float diff = max(dot(norm, lightDir), 0.0);
@@ -93,8 +92,8 @@ void main(){
         float spec = pow(max(dot(viewDir, reflectDir), 0.0), u_Material.shininess * 128.0);
 
         vec3 lAmbient = u_Light[i].ambient * textColor;
-        vec3 lDiffuse = diff * textColor * u_Light[i].diffuse;
-        vec3 lSpecular = spec * materialSpecular * u_Light[i].specular;
+        vec3 lDiffuse = u_Light[i].diffuse * diff * textColor;
+        vec3 lSpecular = u_Light[i].specular * spec * materialSpecular;
 
         if(u_Light[i].type == 3){
             float theta = dot(lightDir, normalize(-u_Light[i].direction));

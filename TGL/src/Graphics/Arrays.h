@@ -17,7 +17,7 @@ public:
 	void Bind();
 	void Unbind();
 
-	void Draw();
+	void Draw(uint32_t indexCount = 0);
 
 	void AddVertexBuffer(const Ref<VertexBuffer>& buffer);
 	void SetIndexBuffer(const Ref<IndexBuffer>& buffer);

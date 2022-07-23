@@ -1,6 +1,7 @@
 #include "tglpch.h"
 #include "Application.h"
 #include "Core/Core.h"
+#include "Graphics/ImGuiRenderer.h"
 
 
 Application* Application::s_Instance = nullptr;
@@ -20,9 +21,12 @@ Application::Application(const WindowProps& props)
 	Keyboard::Init();
 	Mouse::Init();
 	Renderer::Init();
+	ImGuiRenderer::Init();
 }
 
 Application::~Application() {
+	ImGuiRenderer::Shutdown();
+	Renderer::Shutdown();
 }
 
 void Application::Run() {
@@ -45,6 +49,11 @@ void Application::Run() {
 				layer->OnUpdate(timestep);
 				layer->OnDraw();
 			}
+
+			ImGuiRenderer::Start();
+			for (auto& layer : m_LayerStack)
+				layer->OnGuiDraw();
+			ImGuiRenderer::End();
 		}
 
 		m_Window->Update();

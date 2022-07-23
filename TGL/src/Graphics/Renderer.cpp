@@ -66,6 +66,7 @@ void Renderer::Begin(Type mode, Ref<Camera> camera) {
 }
 
 void Renderer::End() {
+	Renderer::Clear();
 	s_DrawStack.Draw(s_Context, s_Lights);
 	s_DrawStack.Clear();
 }

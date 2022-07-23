@@ -24,10 +24,10 @@ void Renderer3D::Init() {
 		 1.0,  1.0, -1.0, 1.0f, 1.0f, 0.0f, 1.0f, 0.0f,
 		-1.0,  1.0, -1.0, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f,
 		// back
-		 1.0, -1.0, -1.0, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f,
-		-1.0, -1.0, -1.0, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f,
-		-1.0,  1.0, -1.0, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f,
-		 1.0,  1.0, -1.0, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
+		 1.0, -1.0, -1.0, 0.0f, 0.0f, 0.0f, 0.0f, -1.0f,
+		-1.0, -1.0, -1.0, 1.0f, 0.0f, 0.0f, 0.0f, -1.0f,
+		-1.0,  1.0, -1.0, 1.0f, 1.0f, 0.0f, 0.0f, -1.0f,
+		 1.0,  1.0, -1.0, 0.0f, 1.0f, 0.0f, 0.0f, -1.0f,
 		 // bottom
 		 -1.0, -1.0, -1.0, 0.0f, 0.0f, 0.0f, -1.0f, 0.0f,
 		  1.0, -1.0, -1.0, 1.0f, 0.0f, 0.0f, -1.0f, 0.0f,
@@ -77,6 +77,10 @@ void Renderer3D::Init() {
 	s_VA->AddVertexBuffer(vb);
 	s_VA->SetIndexBuffer(ib);
 
+	vb->Unbind();
+	ib->Unbind();
+	s_VA->Unbind();
+
 	std::string oldPrefix = Registry::GetShaderPathPrefix();
 	Registry::SetShaderPathPrefix("");
 	s_BasicShader = Registry::GetShader("assets/shaders/shader.glsl");
@@ -122,4 +126,35 @@ void Renderer3D::DrawCube(const glm::vec3& position, const Ref<Material> materia
 	Renderer::Submit(s_TextureShader, s_VA, model, material);
 }
 
+void Renderer3D::DrawCube(const glm::vec3& position, const Ref<Texture> texture, const glm::vec3& size, float rotation) {
+	glm::mat4 model = glm::translate(glm::mat4(1.0f), { position.x, position.y, position.z })
+		* glm::rotate(glm::mat4(1.0f), rotation, { 1.0f, 0.0f, 1.0f })
+		* glm::scale(glm::mat4(1.0f), { size.x, size.y, size.z });
+
+	Ref<Material> material = CreateRef<Material>();
+	material->SetAmbientMap(texture);
+
+	Renderer::Submit(s_TextureShader, s_VA, model, material);
+}
+
+void Renderer3D::DrawModel(Ref<Model> model, const glm::vec3& position, const glm::vec3& size, float rotation){
+	glm::mat4 modelMat = glm::translate(glm::mat4(1.0f), { position.x, position.y, position.z })
+		* glm::rotate(glm::mat4(1.0f), rotation, { 1.0f, 1.0f, 1.0f })
+		* glm::scale(glm::mat4(1.0f), { size.x, size.y, size.z });
+
+	for(auto mesh: model->GetMeshes())
+		Renderer::Submit(s_TextureShader, mesh->GetVA(), modelMat, mesh->GetMaterial());
+}
+
+void Renderer3D::DrawVertexArray(const Ref<VertexArray> va, const glm::vec3& position, const glm::vec3& size, const glm::vec4& color, float rotation) {
+	glm::mat4 model = glm::translate(glm::mat4(1.0f), { position.x, position.y, position.z })
+		* glm::rotate(glm::mat4(1.0f), rotation, { 1.0f, 1.0f, 1.0f })
+		* glm::scale(glm::mat4(1.0f), { size.x, size.y, size.z });
+
+	Ref<Material> material = CreateRef<Material>();
+	material->SetAmbientMap(Renderer::GetWhiteTexture());
+	material->SetColor(color);
+
+	Renderer::Submit(s_TextureShader, va, model, material);
+}
 

@@ -13,12 +13,17 @@ public:
 	Texture(const std::string& filePath);
 	~Texture();
 
+	void SetSize(uint32_t width, uint32_t height);
 	void SetData(void* data, uint32_t size);
 
 	inline const uint32_t GetWidth() { return m_Width; }
 	inline const uint32_t GetHeight() { return m_Height; }
 
 	void Bind(uint32_t slot) const;
+
+	inline const GLuint GetID() { return m_ID; }
+
+	virtual bool operator==(const Texture& other) const { return m_ID == other.m_ID; }
 
 private:
 	void CreateGLImage();

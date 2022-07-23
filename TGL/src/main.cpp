@@ -2,8 +2,16 @@
 #include "TGL.h"
 
 #include "Physics/2D/World.h"
+#include "Tests/FPSCamera.h"
+#include "Objects/Terrain.h"
 
 #include <glad/glad.h>
+#include "imgui.h"
+
+
+#include "3DTestLayer.h"
+#include "L2DTestLayer.h"
+
 
 glm::vec3 cubePositions[] = {
 	glm::vec3(0.0f,  0.0f,  0.0f),
@@ -19,33 +27,126 @@ glm::vec3 cubePositions[] = {
 };
 
 
+class ModelViewerLayer : public Layer {
+public:
+	ModelViewerLayer() : Layer("Model Viewer"), m_AmbiantValue(1.0f), m_DiffuseValue(0.0f), m_SpecularValue(0.0f), m_Rot(0.0f), m_Rot2(90.0) {
+		m_Light = CreateRef<Light>(Light::Type::DIRECTIONAL);
+		m_Light->SetDirection({ 0.f, -1.0f, 0.f });
+		m_Light->SetAmbient({ m_AmbiantValue, m_AmbiantValue, m_AmbiantValue });
+		m_Light->SetDiffuse({ m_DiffuseValue, m_DiffuseValue, m_DiffuseValue });
+		m_Light->SetSpecular({ m_SpecularValue, m_SpecularValue, m_SpecularValue });
+		m_Light->SetPosition({ .0f, 5.0f, .0f });
+		m_Light->SetAttenuation(1.0f, 0.09f, 0.032f);
+
+		m_SceneLight = CreateRef<Light>(Light::Type::POINT);
+		m_SceneLight->SetAmbient({ 1.0, 1.0 ,1.0 });
+		m_SceneLight->SetDiffuse({ 0.0 ,0.0, 0.0 });
+		m_SceneLight->SetSpecular({ 0.0, 0.0, 0.0 });
+		m_SceneLight->SetPosition({ .0f, 5.0f, .0f });
+		m_SceneLight->SetAttenuation(1.0f, 0.09f, 0.032f);
+
+		FrameBufferProps props;
+		props.Width = 400;
+		props.Height = 300;
+		m_FrameBuffer = CreateRef<FrameBuffer>(props);
+	}
+
+	virtual inline void OnAttach() {
+		m_Material = CreateRef<Material>();
+		//m_Material->SetColor({ 1.0f, 0.0f, 0.0f, 1.0f });
+		m_Material->SetAmbient({ 0.24725, 0.1995, 0.0745 });
+		m_Material->SetDiffuse({ 0.75164, 0.60648, 0.22648 });
+		m_Material->SetSpecular({ 0.628281, 0.555802, 0.366065 });
+		m_Material->SetShininess(40.0f);
+
+		m_Camera = CreateRef<Camera3D>();
+		m_Camera->SetPosition({ 0.0f, 0.0f, -2.0f });
+		m_Camera->SetTarget({ 0.0f, 0.0f, 0.0f });
+	}
+
+	virtual inline void OnUpdate(float ts) {
+		m_Light->SetAmbient({ m_AmbiantValue, m_AmbiantValue, m_AmbiantValue });
+		m_Light->SetDiffuse({ m_DiffuseValue, m_DiffuseValue, m_DiffuseValue });
+		m_Light->SetSpecular({ m_SpecularValue, m_SpecularValue, m_SpecularValue });
+
+		m_Rot += 0.02;
+	}
+
+	virtual inline void OnDraw() {
+		m_FrameBuffer->Bind();
+		m_Camera->SetAspectRatio(m_FrameBuffer->GetProps().Width, m_FrameBuffer->GetProps().Height);
+		Renderer::Begin(Renderer::R3D, m_Camera);
+		Renderer::SetClearColor({ 0.3, 0.3, 0.3 });
+		Renderer::AddLight(m_Light);
+		Renderer3D::DrawCube(glm::vec3(0.0f, 0.0f, 0.0f), m_Material, glm::vec3(.9f), m_Rot2);
+		Renderer::End();
+		m_FrameBuffer->Unbind();
+
+		Renderer::Begin(Renderer::R3D, m_Camera);
+		Renderer::SetClearColor({ 0.2, 0.8, 0.46 });
+		Renderer::AddLight(m_SceneLight);
+		Renderer3D::DrawCube(glm::vec3(0.0f, 0.0f, 0.0f), m_Material, glm::vec3(.5f));
+		Renderer::End();
+	}
+
+	virtual inline void OnGuiDraw() {
+		ImGui::Begin("Hello, world!");
+		ImGui::Text("This is some useful text.");      
+		ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+		ImGui::SliderFloat("Ambient", &m_AmbiantValue, 0.0f, 100.0f);
+		ImGui::SliderFloat("Diffuse", &m_DiffuseValue, 0.0f, 100.0f);
+		ImGui::SliderFloat("Specular", &m_SpecularValue, 0.0f, 100.0f);
+
+		ImGui::Image((void*)(intptr_t)m_FrameBuffer->GetTextureID(), ImVec2(m_FrameBuffer->GetProps().Width, m_FrameBuffer->GetProps().Height));
+
+		ImGui::SliderFloat("Rot2", &m_Rot2, 0.0f, 10.0);
+		
+		ImGui::End();
+	}
+
+private:
+	Ref<Light> m_Light, m_SceneLight;
+	Ref<Material> m_Material;
+	Ref<Camera3D> m_Camera;
+	Ref<FrameBuffer> m_FrameBuffer;
+	float m_AmbiantValue, m_DiffuseValue, m_SpecularValue;
+	float m_Rot, m_Rot2;
+};
+
+
 class S3DLayer : public Layer{
 public:
 	S3DLayer() : Layer("3d Test"), m_Rot(.0f) {
-		m_Cam = CreateRef<Camera3D>(glm::vec3(3.0f, 0.0f, 3.0f));
-		m_Cam->SetTarget({ -3.8f, -2.0f, -12.3f });
+		m_Cam = CreateRef<FPSCamera>();
+		m_Cam->SetPosition(glm::vec3(3.0f, 0.0f, 3.0f));
+		//m_Cam->SetTarget({ -3.8f, -2.0f, -12.3f });
 
-		m_Light = CreateRef<Light>(Light::Type::FLASH);
-		m_Light->SetAmbient({ .03f, .03f, .03f });
+		m_Light = CreateRef<Light>(Light::Type::POINT);
+		m_Light->SetAmbient({ .9f, .9f, .9f });
 		m_Light->SetDiffuse({ .8f, .8f, .8f });
 		m_Light->SetSpecular({ 1.0f, 1.0f, 1.0f });
 
 		// For DIRECTIONAL & FLASHLIGHT type
-		//m_Light->SetDirection({ -0.2f, -1.0f, -0.3f });
-		m_Light->SetDirection({ -3.8f, -2.0f, -12.3f });
+		//m_Light->SetDirection({  -0.2f, -2.0f, -0.3f });
+		//m_Light->SetDirection({ 0.f, -1.0f, 0.f });
 
 		// For POINT & FLASHLIGHT type
-		//m_Light->SetPosition({ 1.2f, 1.0f, 2.0f });
-		m_Light->SetPosition({ 3.0f, 0.0f, 3.0f });
+		m_Light->SetPosition({ .0f, 5.0f, .0f });
 		m_Light->SetAttenuation(1.0f, 0.09f, 0.032f);
+		//m_Light->SetAttenuation(1.0f, 0.045f, 0.0075f);
 
-		// For FLASHLIGHT
 		m_Light->SetCutOff(12.5f);
 		m_Light->SetOuterCutOff(17.5f);
+
+		m_Terrain = CreateRef<Terrain>();
+		m_Terrain->InitData(100, 100);
+
+		Application::GetInstance()->GetWindow()->SetCursorState(false);
 	}
 
 	virtual void OnAttach() {
 		Registry::SetTexturePathPrefix("assets/textures/");
+		Registry::SetModelsPathPrefix("assets/models/");
 
 		// Box
 		m_Material = CreateRef<Material>();
@@ -53,17 +154,19 @@ public:
 		m_Material->SetShininess(.5f);
 		m_Material->SetAmbientMap(Registry::GetTexture("container.png"));
 		m_Material->SetSpecularMap(Registry::GetTexture("container_specular.png"));
+
+		// Load Model
+		//Registry::GetModel("street_scene.obj");
+		Registry::GetModel("cube.obj");
 	}
 
 	virtual void OnUpdate(float ts) {
 		m_Rot += .5f * ts;
 
-		if (Keyboard::IsReleased(GLFW_KEY_D))
-			m_Light->SetType(Light::Type::DIRECTIONAL);
-		if (Keyboard::IsReleased(GLFW_KEY_P))
-			m_Light->SetType(Light::Type::POINT);
-		if (Keyboard::IsReleased(GLFW_KEY_F))
-			m_Light->SetType(Light::Type::FLASH);
+		if (Keyboard::IsReleased(GLFW_KEY_LEFT_ALT))
+			Application::GetInstance()->GetWindow()->ToggleCursor();
+
+		m_Cam->OnUpdate(ts);
 	}
 
 	virtual inline void OnDraw() {
@@ -71,21 +174,26 @@ public:
 
 		Renderer::AddLight(m_Light);
 
+		//Renderer3D::DrawModel(Registry::GetModel("street_scene.obj"), { 10.0f, .0f, 10.0f });
+		Renderer3D::DrawModel(Registry::GetModel("cube.obj"), { .0f, .0f, .0f }, glm::vec4(1.0f), m_Rot);
+
 		// cube
-		for (unsigned int i = 0; i < 10; i++)
-			Renderer3D::DrawCube(cubePositions[i], m_Material, glm::vec3(.5f), m_Rot);
+		Renderer3D::DrawCube(glm::vec3(0.0f, 0.0f, 0.0f), m_Material, glm::vec3(.5f), m_Rot);
 		
 		// light
-		Renderer3D::DrawCube(m_Light->GetPosition(), glm::vec3(0.05f));
+		//Renderer3D::DrawCube(m_Light->GetPosition(), glm::vec3(0.05f));
+
+		Renderer3D::DrawVertexArray(m_Terrain->GetVertexArray(), glm::vec3(-50.0, -3.0, -50.0f));
 
 		Renderer::End();
 	}
 
 private:
 	Ref<Light> m_Light;
-	Ref<Camera3D> m_Cam;
+	Ref<FPSCamera> m_Cam;
 	Ref<Material> m_Material;
 	float m_Rot;
+	Ref<Terrain> m_Terrain;
 };
 
 
@@ -101,7 +209,7 @@ public:
 		SUB_EVENT(EventMouseScroll, TestLayer::OnScroll);
 		m_MousePosition = Mouse::GetPosition();
 
-		m_World.CreateBody(Body2D::DYNAMIC, glm::vec2(0.0, 1.0), glm::vec2(1.0f));
+		//m_World.CreateBody(Body2D::DYNAMIC, glm::vec2(0.0, 1.0), glm::vec2(1.0f));
 	}
 
 	virtual inline void OnUpdate(float ts) {
@@ -153,7 +261,7 @@ public:
 		}
 		m_MousePosition = Mouse::GetPosition();
 
-		m_World.Update(ts);
+		//m_World.Update(ts);
 	}
 
 	virtual inline void OnDraw() {
@@ -167,16 +275,14 @@ public:
 					{ x * (0.1 + m_Margin), y * (0.1 + m_Margin) },
 					{ 0.1, 0.1 }
 				);
-
-				if (i % 17 == 0) {
-					Renderer2D::DrawQuad(
-						"glass05red.png",
-						{ x * (0.1 + m_Margin), y * (0.1 + m_Margin) },
-						{ 0.1, 0.1 }
-					);
-				}
 			}
 		}
+
+		Renderer2D::DrawQuad(
+			"glass05red.png",
+			{ 0 * (0.1 + m_Margin), 20 * (0.1 + m_Margin) },
+			{ 2, 2 }
+		);
 
 		glm::vec4 color = {0.0f, 0.0f, 1.0f, 1.0f};
 		for (int y = 0; y < 40; y++) {
@@ -197,7 +303,7 @@ public:
 
 		Renderer::End();
 
-		m_World.DrawDebug(m_Cam);
+		//m_World.DrawDebug(m_Cam);
 	}
 
 	inline bool OnScroll(EventMouseScroll& e) {
@@ -221,7 +327,7 @@ private:
 
 int main(int argc, char* argv[]) {
 	Application app(WindowProps("Test TGL", 800, 600));
-	app.PushLayer(CreateRef<S3DLayer>());
+	app.PushLayer(CreateRef<L2DTestLayer>());
 	app.Run();
 
 	return 0;

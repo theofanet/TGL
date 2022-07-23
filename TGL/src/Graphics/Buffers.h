@@ -17,6 +17,8 @@ public:
 	virtual const void Bind() { glBindBuffer(m_BufferType, m_ID); };
 	virtual const void Unbind() { glBindBuffer(m_BufferType, 0); };
 
+	virtual void SetData(const void* data, uint32_t size);
+
 	inline uint32_t GetCount() { return m_Count; }
 	inline uint32_t GetSize() { return m_Size; }
 
@@ -39,8 +41,10 @@ public:
 	};
 
 	static Ref<VertexBuffer> Create(const std::vector<float>& vertices);
+	static Ref<VertexBuffer> Create(const uint32_t size);
 
 	VertexBuffer(const std::vector<float>& vertices);
+	VertexBuffer(const uint32_t size);
 
 	void AddAttrib(uint32_t count, GLenum type, bool normalized = false);
 	inline const std::vector<Attrib>& GetAttribs() { return m_Attribs; }
@@ -56,5 +60,8 @@ protected:
 class IndexBuffer : public Buffer {
 public:
 	static Ref<IndexBuffer> Create(const std::vector<uint32_t>& indices);
+	static Ref<IndexBuffer> Create(uint32_t* indices, uint32_t count);
+
 	IndexBuffer(const std::vector<uint32_t>& indices);
+	IndexBuffer(uint32_t* indices, uint32_t count);
 };

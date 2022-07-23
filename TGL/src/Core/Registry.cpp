@@ -5,9 +5,11 @@
 std::map<std::string, Ref<Shader>> Registry::s_Shaders;
 std::map<std::string, Ref<Texture>> Registry::s_Textures;
 std::map<std::string, Ref<Material>> Registry::s_Materials;
+std::map<std::string, Ref<Model>> Registry::s_Models;
 
 std::string Registry::s_ShaderPathPrefix = "";
 std::string Registry::s_TexturePathPrefix = "";
+std::string Registry::s_ModelsPathPrefix = "";
 
 
 Ref<Shader> Registry::GetShader(const std::string& filePath){
@@ -24,10 +26,17 @@ Ref<Texture> Registry::GetTexture(const std::string& filePath){
 	return s_Textures[f];
 }
 
-const Ref<Material> Registry::GetMaterial(const std::string& key){
+Ref<Material> Registry::GetMaterial(const std::string& key){
 	if (s_Materials.find(key) == s_Materials.end())
 		s_Materials[key] = CreateRef<Material>();
 	return s_Materials[key];
+}
+
+Ref<Model> Registry::GetModel(const std::string& filePath){
+	std::string f = s_ModelsPathPrefix + filePath;
+	if (s_Models.find(f) == s_Models.end())
+		s_Models[f] = CreateRef<Model>(f);
+	return s_Models[f];
 }
 
 void Registry::SetMaterial(const std::string& key, const Ref<Material> material){

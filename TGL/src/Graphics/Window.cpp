@@ -4,7 +4,7 @@
 #include <glad/glad.h>
 
 #include "Core/Core.h"
-#include "Core/Events.h"
+#include "Core/Application.h"
 
 
 static void GLFWErrorCallback(int error, const char* desc) {
@@ -28,7 +28,7 @@ void GLContext::SwapBuffers() {
 bool Window::s_GLFWInitialized = false;
 
 Window::Window(const WindowProps& props) 
-	: m_Window(nullptr), m_Props(props) {
+	: m_Window(nullptr), m_Props(props), m_CursorState(true) {
 	Init();
 }
 
@@ -56,6 +56,7 @@ void Window::Init() {
 	});
 
 	glfwSetWindowSizeCallback(m_Window, [](GLFWwindow* window, int width, int height) {
+		Application::GetInstance()->GetWindow()->SetPropSize(width, height);
 		TRIGGER_EVENT(EventWindowResize, width, height);
 	});
 
@@ -103,7 +104,20 @@ void Window::SetCursorPos(const glm::vec2& position){
 	glfwSetCursorPos(m_Window, position.x, position.y);
 }
 
+void Window::SetCursorMiddle() {
+	glfwSetCursorPos(m_Window, m_Props.Width / 2, m_Props.Height / 2);
+}
+
 void Window::Update() {
 	glfwPollEvents();
 	m_Context->SwapBuffers();
+}
+
+void Window::ToggleCursor() {
+	SetCursorState(!m_CursorState);
+}
+
+void Window::SetCursorState(bool state) {
+	m_CursorState = state;
+	glfwSetInputMode(m_Window, GLFW_CURSOR, m_CursorState ? GLFW_CURSOR_NORMAL : GLFW_CURSOR_DISABLED);
 }

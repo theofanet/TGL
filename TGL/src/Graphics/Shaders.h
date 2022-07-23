@@ -27,6 +27,7 @@ public:
 	void Unbind();
 
 	void SetInt(const std::string& name, int value);
+	void SetIntArray(const std::string& name, int* values, uint32_t count);
 
 	void SetFloat(const std::string& name, float value1);
 	void SetFloat(const std::string& name, float value1, float value2);

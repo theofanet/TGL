@@ -3,6 +3,7 @@
 #include <GLFW/glfw3.h>
 #include "Core/Core.h"
 #include <glm/glm.hpp>
+#include "Core/Events.h"
 
 
 struct WindowProps {
@@ -31,10 +32,21 @@ public:
 	Window(const WindowProps& props);
 	~Window();
 
-	Ref<GLContext> GetContext() { return m_Context; }
+	inline Ref<GLContext> GetContext() { return m_Context; }
+	inline GLFWwindow* GetNativeWindow() { return m_Window; }
 	
 	void SetTitle(const std::string& title);
 	void SetCursorPos(const glm::vec2& position);
+	void SetCursorMiddle();
+	void ToggleCursor();
+	void SetCursorState(bool state);
+
+	inline int GetWidth() { return m_Props.Width; }
+	inline int GetHeight() { return m_Props.Height; }
+	inline void SetPropSize(int width, int height) {
+		m_Props.Width = width;
+		m_Props.Height = height;
+	};
 
 	void Update();
 
@@ -42,6 +54,7 @@ private:
 	void Init();
 
 	static bool s_GLFWInitialized;
+	bool m_CursorState;
 
 	GLFWwindow *m_Window;
 	WindowProps m_Props;

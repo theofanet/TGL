@@ -1,0 +1,70 @@
+{
+	"configurations" : 
+	[
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"childIndexes" : 
+					[
+						1
+					],
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-.-Debug-d0094a50bb2071803777.json",
+					"projectIndex" : 0,
+					"source" : "."
+				},
+				{
+					"build" : "irrXML",
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-irrXML-Debug-a7bb3bffb2cf30fd34f9.json",
+					"parentIndex" : 0,
+					"projectIndex" : 0,
+					"source" : "irrXML",
+					"targetIndexes" : 
+					[
+						0
+					]
+				}
+			],
+			"name" : "Debug",
+			"projects" : 
+			[
+				{
+					"directoryIndexes" : 
+					[
+						0,
+						1
+					],
+					"name" : "Project",
+					"targetIndexes" : 
+					[
+						0
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 1,
+					"id" : "IrrXML::@999dba3a12e815debe19",
+					"jsonFile" : "target-IrrXML-Debug-c29b69ade27c00417c1d.json",
+					"name" : "IrrXML",
+					"projectIndex" : 0
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "D:/Dev/TGL/TGL/vendor/assimp/contrib/out/build/x64-Debug",
+		"source" : "D:/Dev/TGL/TGL/vendor/assimp/contrib"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 3
+	}
+}

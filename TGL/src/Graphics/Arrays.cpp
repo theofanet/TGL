@@ -38,7 +38,9 @@ void VertexArray::SetIndexBuffer(const Ref<IndexBuffer>& buffer) {
 	m_IB = buffer;
 }
 
-void VertexArray::Draw() {
+void VertexArray::Draw(uint32_t indexCount) {
 	Bind();
-	glDrawElements(GL_TRIANGLES, m_IB->GetCount(), GL_UNSIGNED_INT, nullptr);
+	m_IB->Bind();
+	uint32_t count = indexCount ? indexCount : m_IB->GetCount();
+	glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, nullptr);
 }
