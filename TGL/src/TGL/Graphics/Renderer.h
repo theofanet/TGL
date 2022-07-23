@@ -26,6 +26,10 @@ public:
 	static inline const Ref<Texture>GetWhiteTexture() { return s_WhiteTexture; }
 	static void Clear(const glm::vec3& color = glm::vec3(0.0f));
 
+	static void SetLineWidth(float width);
+
+	static void DrawVertexArray(Ref<VertexArray> va, uint32_t vertexCount, GLenum drawAs);
+
 private:
 	static Ref<RendererEventHandler> s_Handler;
 	static Ref<Texture> s_WhiteTexture;

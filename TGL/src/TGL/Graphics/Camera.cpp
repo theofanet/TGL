@@ -45,37 +45,3 @@ void Camera2D::SetProjection(float left, float right, float bottom, float top){
 	m_ProjectionMatrix = glm::ortho(left, right, bottom, top, -1.0f, 1.0f);
 	m_ViewProjectionMatrix = m_ProjectionMatrix * m_ViewMatrix;
 }
-
-Camera3D::Camera3D(const glm::vec3& position) 
-	: Camera(position) {
-	m_AspectRatio = 4.0f / 3.0f;
-	m_Up = { 0.0f, 1.0f, 0.0f };
-	m_Target = { 0.0f, 0.0f, 0.0f };
-	RecalculateProjection();
-	RecalculateViewMatrix();
-	SUB_EVENT(EventWindowResize, Camera3D::OnWindowResize);
-}
-
-Camera3D::~Camera3D() {
-}
-
-void Camera3D::SetAspectRatio(uint32_t width, uint32_t height) {
-	m_AspectRatio = (float)width / (float)height;
-	RecalculateProjection();
-}
-
-bool Camera3D::OnWindowResize(EventWindowResize& e) {
-	SetAspectRatio(e.Width, e.Height);
-	return true;
-}
-
-void Camera3D::RecalculateProjection() {
-	m_ProjectionMatrix = glm::perspective((float)glm::radians(90.0f), m_AspectRatio, 0.1f, 100.0f);
-	m_ViewProjectionMatrix = m_ProjectionMatrix * m_ViewMatrix;
-}
-
-void Camera3D::RecalculateViewMatrix(){
-	m_ViewMatrix = glm::lookAt(m_Position, m_Target, m_Up);
-	m_ViewProjectionMatrix = m_ProjectionMatrix * m_ViewMatrix;
-}
-

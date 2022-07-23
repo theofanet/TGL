@@ -44,6 +44,8 @@ void MyLayer::OnDraw() {
 
 	Renderer2D::Begin(m_Cam);
 
+	Renderer2D::DrawLine({ 0.0f, 0.0f, 0.1f }, { 4.0, 4.0, 0.1f }, { 0.0, 0.2, 0.8, 1.0 });
+
 	Renderer2D::DrawQuad({ 1.0, 0.0 }, { 1.0f, 1.0f }, { 1.0f, 0.0f, 0.0f, 1.0f });
 	Renderer2D::DrawQuad({ -1.0, 0.0 }, { 1.0f, 1.0f }, { 1.0f, 1.0f, 0.0f, 1.0f }, 45.0f);
 	Renderer2D::DrawQuad("Checkerboard.png", { .0f, .0f, -0.1f }, { 20.0f, 20.0f }, glm::vec4(1.0f), 0, 10.0f);

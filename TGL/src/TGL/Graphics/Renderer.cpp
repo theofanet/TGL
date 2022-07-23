@@ -41,6 +41,15 @@ void Renderer::Clear(const glm::vec3& color) {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
+void Renderer::SetLineWidth(float width){
+	glLineWidth(width);
+}
+
+void Renderer::DrawVertexArray(Ref<VertexArray> va, uint32_t vertexCount, GLenum drawAs){
+	va->Bind();
+	glDrawArrays(drawAs, 0, vertexCount);
+}
+
 RendererEventHandler::RendererEventHandler() {
 	SUB_EVENT(EventWindowResize, RendererEventHandler::OnWindowResize);
 }
