@@ -20,5 +20,6 @@ protected:
 
 private:
 	Entity m_Entity;
+
 	friend class Scene;
 };

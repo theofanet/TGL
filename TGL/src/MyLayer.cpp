@@ -33,6 +33,8 @@ void MyLayer::OnAttach() {
 	m_CameraEntity = m_ActiveScene->CreateEntity("Camera Entity");
 	m_CameraEntity.AddComponent<CameraComponent>();
 	m_CameraEntity.AddComponent<NativeScriptComponent>().Bind<CameraController>();
+
+	m_EntitiesPanel.SetContext(m_ActiveScene);
 }
 
 void MyLayer::OnUpdate(float ts) {
@@ -61,6 +63,8 @@ void MyLayer::OnDraw() {
 void MyLayer::OnGuiDraw() {
 	bool workspaceOpen = true;
 	ImGuiRenderer::StartWorkspace(workspaceOpen);
+
+	m_EntitiesPanel.OnImGuiRender();
 
 	ImGui::Begin("Renderer2D Stats");
 	ImGui::Text("FPS : %.2f", m_StatsFPS);

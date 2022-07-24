@@ -3,6 +3,8 @@
 
 #include "TGL/TGL.h"
 
+#include "Panels/SceneEntitiesPanel.h"
+
 
 class MyLayer : public Layer {
 public:
@@ -28,4 +30,6 @@ private:
 	Entity m_Square, m_CameraEntity;
 	
 	float m_StatsFPS;
+
+	SceneEntitiesPanel m_EntitiesPanel;
 };
