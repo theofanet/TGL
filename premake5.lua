@@ -14,10 +14,13 @@ IncludeDir["Glad"] = "TGL/vendor/glad/include"
 IncludeDir["glm"] = "TGL/vendor/glm"
 IncludeDir["spdlog"] = "TGL/vendor/spdlog/include"
 IncludeDir["stb_image"] = "TGL/vendor/stb_image"
+IncludeDir["ImGui"] = "TGL/vendor/ImGui"
+IncludeDir["entt"] = "TGL/vendor/entt/include"
 
 group "Dependencies"
 	include "TGL/vendor/GLFW"
 	include "TGL/vendor/Glad"
+	include "TGL/vendor/ImGui"
 
 group ""
 
@@ -41,11 +44,11 @@ project "TGL"
 		"%{IncludeDir.glm}/glm/**.inl",
 		"%{IncludeDir.stb_image}/**.h",
 		"%{IncludeDir.stb_image}/**.cpp"
-
 	}
 
 	defines {
-		"_CRT_SECURE_NO_WARNINGS"
+		"_CRT_SECURE_NO_WARNINGS",
+		"IMGUI_IMPL_OPENGL_LOADER_GLAD"
 	}
 
 	includedirs {
@@ -54,13 +57,16 @@ project "TGL"
 		"%{IncludeDir.GLFW}",
 		"%{IncludeDir.Glad}",
 		"%{IncludeDir.glm}",
-		"%{IncludeDir.stb_image}"
+		"%{IncludeDir.stb_image}",
+		"%{IncludeDir.entt}",
+		"%{IncludeDir.ImGui}"
 	}
 
 	links {
 		"GLFW",
 		"Glad",
-		"opengl32.lib"
+		"opengl32.lib",
+		"ImGui"
 	}
 
 	filter "system:windows"
