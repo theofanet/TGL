@@ -4,6 +4,17 @@
 #include "TGL/Core/Events.h"
 
 
+class RawCamera {
+public:
+	RawCamera() = default;
+	RawCamera(const glm::mat4& projection) : m_Projection(projection) {}
+	virtual ~RawCamera() = default;
+	const glm::mat4& GetProjection() { return m_Projection; }
+protected:
+	glm::mat4 m_Projection = glm::mat4(1.0f);
+};
+
+
 class Camera {
 public:
 	Camera(const glm::vec3& position = glm::vec3(0.0, 0.0, 0.0));

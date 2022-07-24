@@ -15,12 +15,11 @@ IncludeDir["glm"] = "TGL/vendor/glm"
 IncludeDir["spdlog"] = "TGL/vendor/spdlog/include"
 IncludeDir["stb_image"] = "TGL/vendor/stb_image"
 IncludeDir["ImGui"] = "TGL/vendor/ImGui"
-IncludeDir["assimp"] = "TGL/vendor/assimp/include"
+IncludeDir["entt"] = "TGL/vendor/entt/include"
 
 group "Dependencies"
 	include "TGL/vendor/GLFW"
 	include "TGL/vendor/Glad"
-	include "TGL/vendor/assimp"
 	include "TGL/vendor/ImGui"
 
 group ""
@@ -59,14 +58,13 @@ project "TGL"
 		"%{IncludeDir.Glad}",
 		"%{IncludeDir.glm}",
 		"%{IncludeDir.stb_image}",
-		"%{IncludeDir.assimp}",
+		"%{IncludeDir.entt}",
 		"%{IncludeDir.ImGui}"
 	}
 
 	links {
 		"GLFW",
 		"Glad",
-		"assimp",
 		"opengl32.lib",
 		"ImGui"
 	}

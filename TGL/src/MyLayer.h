@@ -17,12 +17,15 @@ public:
 	bool OnScroll(EventMouseScroll& e);
 	bool OnEvent(Event& e);
 private:
-	Ref<Camera2D> m_Cam;
 	Ref<FrameBuffer> m_FrameBuffer;
 	glm::vec2 m_ViewportSize;
 
+	Ref<Scene> m_ActiveScene;
+
 	bool m_MouseDown, m_ViewPortHovered;
 	glm::vec2 m_MousePosition;
+
+	Entity m_Square, m_CameraEntity;
 	
 	float m_StatsFPS;
 };

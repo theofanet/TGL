@@ -13,4 +13,9 @@
 #include "Graphics/ImGuiRenderer.h"
 #include "Graphics/FrameBuffer.h"
 
+#include "Scene/Scene.h"
+#include "Scene/Components.h"
+#include "Scene/Entity.h"
+#include "Scene/ScriptableEntity.h"
+
 #include "IO/Binding.h"

@@ -129,16 +129,14 @@ void Renderer2D::Shutdown(){
 	// delete[] s_Data.LineVertexBufferBase; // TOdO : FIX ?
 }
 
+void Renderer2D::Begin(RawCamera camera, glm::mat4 transform){
+	s_Data.CameraViewProjectionMatrix = camera.GetProjection() * glm::inverse(transform);
+	StartBatch();
+}
+
 void Renderer2D::Begin(Ref<Camera> camera) {
 	s_Data.CameraViewProjectionMatrix = camera->GetViewProjectionMatrix();
-
-	s_Data.QuadIndexCount = 0;
-	s_Data.VertexBufferPtr = s_Data.VertexBufferBase;
-
-	s_Data.LineVertexCount = 0;
-	s_Data.LineVertexBufferPtr = s_Data.LineVertexBufferBase;
-
-	s_Data.TextureSlotIndex = 1;
+	StartBatch();
 }
 
 void Renderer2D::End() {
@@ -171,7 +169,10 @@ void Renderer2D::Flush() {
 
 void Renderer2D::FlushAndReset() {
 	End();
+	StartBatch();
+}
 
+void Renderer2D::StartBatch(){
 	s_Data.QuadIndexCount = 0;
 	s_Data.VertexBufferPtr = s_Data.VertexBufferBase;
 
@@ -181,17 +182,9 @@ void Renderer2D::FlushAndReset() {
 	s_Data.TextureSlotIndex = 1;
 }
 
-void Renderer2D::DrawQuad(const glm::vec2& position, const glm::vec2& size, const glm::vec4& color, float rotation, float textureIndex, float tilingFactor) {
-	DrawQuad({ position.x, position.y, 0.0f }, size, color, rotation, textureIndex, tilingFactor);
-}
-
-void Renderer2D::DrawQuad(const glm::vec3& position, const glm::vec2& size, const glm::vec4& color, float rotation, float textureIndex, float tilingFactor) {
+void Renderer2D::DrawQuad(const glm::mat4& transform, const glm::vec4& color, float textureIndex, float tilingFactor) {
 	if (s_Data.QuadIndexCount >= Renderer2DData::MaxIndices)
 		FlushAndReset();
-
-	glm::mat4 transform = glm::translate(glm::mat4(1.0f), { position.x, position.y, position.z })
-		* glm::rotate(glm::mat4(1.0f), glm::radians(rotation), { 0.0f, 0.0f, 1.0f })
-		* glm::scale(glm::mat4(1.0f), { size.x, size.y, 1.0f });
 
 	for (size_t i = 0; i < 4; i++) {
 		s_Data.VertexBufferPtr->Position = transform * s_Data.QuadVertexPositions[i];
@@ -206,32 +199,29 @@ void Renderer2D::DrawQuad(const glm::vec3& position, const glm::vec2& size, cons
 	s_StatsQuads++;
 }
 
+void Renderer2D::DrawQuad(const glm::mat4& transform, const std::string& texturePath, const glm::vec4& color, float tilingFactor) {
+	DrawQuad(transform, color, GetTextureIndex(texturePath), tilingFactor);
+}
+
+void Renderer2D::DrawQuad(const glm::vec2& position, const glm::vec2& size, const glm::vec4& color, float rotation, float textureIndex, float tilingFactor) {
+	DrawQuad({ position.x, position.y, 0.0f }, size, color, rotation, textureIndex, tilingFactor);
+}
+
+void Renderer2D::DrawQuad(const glm::vec3& position, const glm::vec2& size, const glm::vec4& color, float rotation, float textureIndex, float tilingFactor) {
+	glm::mat4 transform = glm::translate(glm::mat4(1.0f), { position.x, position.y, position.z })
+		* glm::rotate(glm::mat4(1.0f), glm::radians(rotation), { 0.0f, 0.0f, 1.0f })
+		* glm::scale(glm::mat4(1.0f), { size.x, size.y, 1.0f });
+
+	DrawQuad(transform, color, textureIndex, tilingFactor);
+}
+
 
 void Renderer2D::DrawQuad(const std::string& texturePath, const glm::vec2& position, const glm::vec2& size, const glm::vec4& color, float rotation, float tilingFactor) {
 	DrawQuad(texturePath, { position.x, position.y, 0.0f }, size, color, rotation, tilingFactor);
 }
 
 void Renderer2D::DrawQuad(const std::string& texturePath, const glm::vec3& position, const glm::vec2& size, const glm::vec4& color, float rotation, float tilingFactor){
-	Ref<Texture> texture = Registry::GetTexture(texturePath);
-	float textureIndex = 0.0f;
-	
-	for (uint32_t i = 1; i < s_Data.TextureSlotIndex; i++) {
-		if (*s_Data.TextureSlots[i].get() == *texture.get()) {
-			textureIndex = (float)i;
-			break;
-		}
-	}
-
-	if (textureIndex == 0.0f) {
-		if (s_Data.TextureSlotIndex >= Renderer2DData::MaxTextureSlots)
-			FlushAndReset();
-
-		textureIndex = (float)s_Data.TextureSlotIndex;
-		s_Data.TextureSlots[s_Data.TextureSlotIndex] = texture;
-		s_Data.TextureSlotIndex++;
-	}
-
-	DrawQuad(position, size, color, rotation, textureIndex, tilingFactor);
+	DrawQuad(position, size, color, rotation, GetTextureIndex(texturePath), tilingFactor);
 }
 
 void Renderer2D::DrawLine(const glm::vec3& p0, const glm::vec3& p1, const glm::vec4& color){
@@ -249,4 +239,27 @@ void Renderer2D::DrawLine(const glm::vec3& p0, const glm::vec3& p1, const glm::v
 void Renderer2D::ResetStats() {
 	s_StatsDrawCalls = 0;
 	s_StatsQuads = 0;
+}
+
+float Renderer2D::GetTextureIndex(const std::string& filepath) {
+	Ref<Texture> texture = Registry::GetTexture(filepath);
+	float textureIndex = 0.0f;
+
+	for (uint32_t i = 1; i < s_Data.TextureSlotIndex; i++) {
+		if (*s_Data.TextureSlots[i].get() == *texture.get()) {
+			textureIndex = (float)i;
+			break;
+		}
+	}
+
+	if (textureIndex == 0.0f) {
+		if (s_Data.TextureSlotIndex >= Renderer2DData::MaxTextureSlots)
+			FlushAndReset();
+
+		textureIndex = (float)s_Data.TextureSlotIndex;
+		s_Data.TextureSlots[s_Data.TextureSlotIndex] = texture;
+		s_Data.TextureSlotIndex++;
+	}
+
+	return textureIndex;
 }

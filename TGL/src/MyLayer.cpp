@@ -2,11 +2,11 @@
 #include "MyLayer.h"
 
 #include "imgui.h"
+#include "Scripts/CameraController.h"
 
 
 MyLayer::MyLayer() : Layer("3D Tests") {
 	float aspectRatio = Application::GetInstance()->GetWindowProps().Width / Application::GetInstance()->GetWindowProps().Height;
-	m_Cam = CreateRef<Camera2D>(aspectRatio);
 	m_StatsFPS = 0.0f;
 	m_ViewPortHovered = false;
 	m_ViewportSize = { 1280, 720 };
@@ -19,35 +19,31 @@ MyLayer::~MyLayer() {
 void MyLayer::OnAttach() {
 	Registry::SetTexturePathPrefix("assets/textures/");
 
-	SUB_EVENT(EventMouseScroll, MyLayer::OnScroll);
 	ON_EVENT(MyLayer::OnEvent);
 
 	m_MousePosition = Mouse::GetPosition();
 
-	m_Cam->SetPosition(glm::vec3(0.0f));
-	m_Cam->SetZoomLevel(6.0f);
-
 	m_FrameBuffer = FrameBuffer::Create(1280, 720);
+
+	m_ActiveScene = CreateRef<Scene>();
+	
+	m_Square = m_ActiveScene->CreateEntity("square");
+	m_Square.AddComponent<SpriteRendererComponent>(glm::vec4{ 0.0f, 1.0f, 0.0f, 1.0f });
+
+	m_CameraEntity = m_ActiveScene->CreateEntity("Camera Entity");
+	m_CameraEntity.AddComponent<CameraComponent>();
+
+	m_CameraEntity.AddComponent<NativeScriptComponent>().Bind<CameraController>();
 }
 
 void MyLayer::OnUpdate(float ts) {
 	FrameBufferProps props = m_FrameBuffer->GetProps();
 	if (props.Height != m_ViewportSize.y || props.Width != m_ViewportSize.x) {
 		m_FrameBuffer->Resize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
-		m_Cam->OnResize(m_ViewportSize.x, m_ViewportSize.y);
+		m_ActiveScene->SetViewportSize(m_ViewportSize.x, m_ViewportSize.y);
 	}
 
-	if (Mouse::IsButtonHeld(MOUSE_LEFT_BUTTON))
-		m_MouseDown = true;
-	else
-		m_MouseDown = false;
-
-	if (m_MouseDown) {
-		glm::vec2 pos = Mouse::GetPosition() - m_MousePosition;
-		m_Cam->SetPosition(m_Cam->GetPosition() + glm::vec3(-pos.x / 600.0, pos.y / 400.0f, 0.0f) * m_Cam->GetZoomLevel());
-	}
-
-	m_MousePosition = Mouse::GetPosition();
+	m_ActiveScene->OnUpdate(ts);
 
 	m_StatsFPS = (1 / ts);
 }
@@ -55,25 +51,11 @@ void MyLayer::OnUpdate(float ts) {
 void MyLayer::OnDraw() {
 	m_FrameBuffer->Bind();
 
-	Renderer::Clear();
+	Renderer::Clear({ 0.15f, 0.15f, 0.15f });
 	Renderer2D::ResetStats();
 
-	Renderer2D::Begin(m_Cam);
+	m_ActiveScene->OnDraw();
 
-	Renderer2D::DrawLine({ 0.0f, 0.0f, 0.1f }, { 4.0, 4.0, 0.1f }, { 0.0, 0.2, 0.8, 1.0 });
-
-	Renderer2D::DrawQuad({ 1.0, 0.0 }, { 1.0f, 1.0f }, { 1.0f, 0.0f, 0.0f, 1.0f });
-	Renderer2D::DrawQuad({ -1.0, 0.0 }, { 1.0f, 1.0f }, { 1.0f, 1.0f, 0.0f, 1.0f }, 45.0f);
-	Renderer2D::DrawQuad("Checkerboard.png", { .0f, .0f, -0.1f }, { 20.0f, 20.0f }, glm::vec4(1.0f), 0, 10.0f);
-
-	for (float y = -5.0f; y < 5.0f; y += 0.5f) {
-		for (float x = -5.0f; x < 5.0f; x += 0.5f) {
-			glm::vec4 color = { (x + 5.0f) / 10.0f, 0.4f, (y + 5.0f) / 10.0f, 0.5f };
-			Renderer2D::DrawQuad({ x, y }, { 0.45f, 0.45f }, color);
-		}
-	}
-
-	Renderer2D::End();
 	m_FrameBuffer->Unbind();
 }
 
@@ -89,6 +71,11 @@ void MyLayer::OnGuiDraw() {
 	ImGui::Text("Indices : %d", Renderer2D::s_StatsQuads * 6);
 	ImGui::End();
 
+	ImGui::Begin("Settings");
+	auto& color = m_Square.GetComponent<SpriteRendererComponent>().Color;
+	ImGui::ColorEdit4("Square Color", glm::value_ptr(color));
+	ImGui::End();
+
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{ 0, 0 });
 	ImGui::Begin("Viewport");
 	m_ViewPortHovered = ImGui::IsWindowFocused();
@@ -100,14 +87,6 @@ void MyLayer::OnGuiDraw() {
 	ImGui::PopStyleVar();
 
 	ImGuiRenderer::EndWorkSpace();
-}
-
-bool MyLayer::OnScroll(EventMouseScroll& e) {
-	float z = m_Cam->GetZoomLevel();
-	z -= e.Y * 0.25;
-	z = std::max(z, 0.25f);
-	m_Cam->SetZoomLevel(z);
-	return true;
 }
 
 bool MyLayer::OnEvent(Event& e) {

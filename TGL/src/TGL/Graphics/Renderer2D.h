@@ -12,11 +12,16 @@ public:
 	static void Init();
 	static void Shutdown();
 
+	static void Begin(RawCamera camera, glm::mat4 transform);
 	static void Begin(Ref<Camera> camera);
 	static void End();
 	static void Flush();
 	static void FlushAndReset();
 
+	static void StartBatch();
+
+	static void DrawQuad(const glm::mat4& transform, const glm::vec4& color, float textureIndex = 0.0f, float tilingFactor = 1.0f);
+	static void DrawQuad(const glm::mat4& transform, const std::string& texturePath, const glm::vec4& color = glm::vec4(1.0f), float tilingFactor = 1.0f);
 	static void DrawQuad(const glm::vec3& position, const glm::vec2& size = glm::vec2(1.0f), const glm::vec4& color = glm::vec4(1.0f), float rotation = 0.0f, float textureIndex = 0.0f, float tilingFactor = 1.0f);
 	static void DrawQuad(const glm::vec2& position, const glm::vec2& size = glm::vec2(1.0f), const glm::vec4& color = glm::vec4(1.0f), float rotation = 0.0f, float textureIndex = 0.0f, float tilingFactor = 1.0f);
 	static void DrawQuad(const std::string& texturePath, const glm::vec3& position, const glm::vec2& size = glm::vec2(1.0f), const glm::vec4& color = glm::vec4(1.0f), float rotation = 0.0f, float tilingFactor = 1.0f);
@@ -25,6 +30,8 @@ public:
 	static void DrawLine(const glm::vec3& p0, const glm::vec3& p1, const glm::vec4& color);
 
 	static void ResetStats();
+
+	static float GetTextureIndex(const std::string& filepath);
 
 private:
 	static bool s_Initialized;
