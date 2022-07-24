@@ -32,7 +32,6 @@ void MyLayer::OnAttach() {
 
 	m_CameraEntity = m_ActiveScene->CreateEntity("Camera Entity");
 	m_CameraEntity.AddComponent<CameraComponent>();
-
 	m_CameraEntity.AddComponent<NativeScriptComponent>().Bind<CameraController>();
 }
 
