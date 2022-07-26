@@ -4,6 +4,7 @@
 #include "imgui.h"
 #include "imgui_internal.h"
 #include "TGL/Scene/Components.h"
+#include "TGL/Core/Registry.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>

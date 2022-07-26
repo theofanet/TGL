@@ -15,6 +15,7 @@ IncludeDir["glm"] = "TGL/vendor/glm"
 IncludeDir["spdlog"] = "TGL/vendor/spdlog/include"
 IncludeDir["stb_image"] = "TGL/vendor/stb_image"
 IncludeDir["ImGui"] = "TGL/vendor/ImGui"
+IncludeDir["ImGuizmo"] = "TGL/vendor/ImGuizmo"
 IncludeDir["entt"] = "TGL/vendor/entt/include"
 
 group "Dependencies"
@@ -43,7 +44,12 @@ project "TGL"
 		"%{IncludeDir.glm}/glm/**.hpp",
 		"%{IncludeDir.glm}/glm/**.inl",
 		"%{IncludeDir.stb_image}/**.h",
-		"%{IncludeDir.stb_image}/**.cpp"
+		"%{IncludeDir.stb_image}/**.cpp",
+		"%{IncludeDir.stb_image}/**.h",
+		"%{IncludeDir.stb_image}/**.cpp",
+
+		"%{IncludeDir.ImGuizmo}/ImGuizmo.h",
+		"%{IncludeDir.ImGuizmo}/ImGuizmo.cpp"
 	}
 
 	defines {
@@ -59,7 +65,8 @@ project "TGL"
 		"%{IncludeDir.glm}",
 		"%{IncludeDir.stb_image}",
 		"%{IncludeDir.entt}",
-		"%{IncludeDir.ImGui}"
+		"%{IncludeDir.ImGui}",
+		"%{IncludeDir.ImGuizmo}"
 	}
 
 	links {
@@ -68,6 +75,9 @@ project "TGL"
 		"opengl32.lib",
 		"ImGui"
 	}
+
+	filter "files:TGL/vendor/ImGuizmo/**.cpp"
+	flags { "NoPCH" }
 
 	filter "system:windows"
 		systemversion "latest"

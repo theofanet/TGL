@@ -7,6 +7,8 @@
 #include "Texture.h"
 #include "EditorCamera.h"
 
+#include "TGL/Scene/Components.h"
+
 
 class Renderer2D {
 public:
@@ -21,17 +23,21 @@ public:
 	static void FlushAndReset();
 
 	static void StartBatch();
+	
+	static void DrawSprite(const glm::mat4& transform, SpriteRendererComponent& component, int entityID);
 
-	static void DrawQuad(const glm::mat4& transform, const glm::vec4& color, float textureIndex = 0.0f, float tilingFactor = 1.0f);
-	static void DrawQuad(const glm::mat4& transform, const std::string& texturePath, const glm::vec4& color = glm::vec4(1.0f), float tilingFactor = 1.0f);
-	static void DrawQuad(const glm::mat4& transform, const Ref<Texture>& texture, const glm::vec4& color = glm::vec4(1.0f), float tilingFactor = 1.0f);
+	static void DrawQuad(const glm::mat4& transform, const glm::vec4& color, float textureIndex = 0.0f, float tilingFactor = 1.0f, int entityID = -1);
+	static void DrawQuad(const glm::mat4& transform, const std::string& texturePath, const glm::vec4& color = glm::vec4(1.0f), float tilingFactor = 1.0f, int entityID = -1);
+	static void DrawQuad(const glm::mat4& transform, const Ref<Texture>& texture, const glm::vec4& color = glm::vec4(1.0f), float tilingFactor = 1.0f, int entityID = -1);
 
-	static void DrawQuad(const glm::vec3& position, const glm::vec2& size = glm::vec2(1.0f), const glm::vec4& color = glm::vec4(1.0f), float rotation = 0.0f, float textureIndex = 0.0f, float tilingFactor = 1.0f);
-	static void DrawQuad(const glm::vec2& position, const glm::vec2& size = glm::vec2(1.0f), const glm::vec4& color = glm::vec4(1.0f), float rotation = 0.0f, float textureIndex = 0.0f, float tilingFactor = 1.0f);
-	static void DrawQuad(const std::string& texturePath, const glm::vec3& position, const glm::vec2& size = glm::vec2(1.0f), const glm::vec4& color = glm::vec4(1.0f), float rotation = 0.0f, float tilingFactor = 1.0f);
-	static void DrawQuad(const std::string& texturePath, const glm::vec2& position, const glm::vec2& size = glm::vec2(1.0f), const glm::vec4& color = glm::vec4(1.0f), float rotation = 0.0f, float tilingFactor = 1.0f);
+	static void DrawQuad(const glm::vec3& position, const glm::vec2& size = glm::vec2(1.0f), const glm::vec4& color = glm::vec4(1.0f), float rotation = 0.0f, float textureIndex = 0.0f, float tilingFactor = 1.0f, int entityID = -1);
+	static void DrawQuad(const glm::vec2& position, const glm::vec2& size = glm::vec2(1.0f), const glm::vec4& color = glm::vec4(1.0f), float rotation = 0.0f, float textureIndex = 0.0f, float tilingFactor = 1.0f, int entityID = -1);
+	static void DrawQuad(const std::string& texturePath, const glm::vec3& position, const glm::vec2& size = glm::vec2(1.0f), const glm::vec4& color = glm::vec4(1.0f), float rotation = 0.0f, float tilingFactor = 1.0f, int entityID = -1);
+	static void DrawQuad(const std::string& texturePath, const glm::vec2& position, const glm::vec2& size = glm::vec2(1.0f), const glm::vec4& color = glm::vec4(1.0f), float rotation = 0.0f, float tilingFactor = 1.0f, int entityID = -1);
 
-	static void DrawLine(const glm::vec3& p0, const glm::vec3& p1, const glm::vec4& color);
+	static void DrawLine(const glm::vec3& p0, const glm::vec3& p1, const glm::vec4& color, int entityID = -1);
+	static void DrawRect(const glm::vec3& position, const glm::vec3& size, const glm::vec4& color, int entityID = -1);
+	static void DrawRect(const glm::mat4& transform, const glm::vec4& color, int entityID = -1);
 
 	static void ResetStats();
 

@@ -1,6 +1,5 @@
 #pragma once
 
-#include "TGL/TGL.h"
 #include "Scene.h"
 #include "entt.hpp"
 

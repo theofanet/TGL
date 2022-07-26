@@ -27,7 +27,15 @@ void VertexArray::AddVertexBuffer(const Ref<VertexBuffer>& buffer) {
 	buffer->Bind();
 	for (const auto& a : buffer->GetAttribs()) {
 		glEnableVertexAttribArray(a.index);
-		glVertexAttribPointer(a.index, a.size, a.type, a.normalized ? GL_TRUE : GL_FALSE, buffer->GetStride(), (const void*)a.offset);
+
+		switch (a.type) {
+			case GL_INT:
+			case GL_BOOL:
+				glVertexAttribIPointer(a.index, a.size, a.type, buffer->GetStride(), (const void*)a.offset);
+				break;
+			default:
+				glVertexAttribPointer(a.index, a.size, a.type, a.normalized ? GL_TRUE : GL_FALSE, buffer->GetStride(), (const void*)a.offset);
+		}
 	}
 	m_VBs.push_back(buffer);
 }

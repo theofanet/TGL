@@ -21,11 +21,13 @@ struct Vertex {
 	glm::vec2 TexCoords;
 	float TexIndex;
 	float TilingFactor;
+	int EntityID;
 };
 
 struct LineVertex {
 	glm::vec3 Position;
 	glm::vec4 Color;
+	int EntityID;
 };
 
 struct Renderer2DData {
@@ -71,6 +73,7 @@ void Renderer2D::Init() {
 	s_QuadsVB->AddAttrib(2, GL_FLOAT); // u v
 	s_QuadsVB->AddAttrib(1, GL_FLOAT); // texture ID
 	s_QuadsVB->AddAttrib(1, GL_FLOAT); // tiling Factor
+	s_QuadsVB->AddAttrib(1, GL_INT); // Entity ID
 
 	s_Data.VertexBufferBase = new Vertex[Renderer2DData::MaxVertices];
 
@@ -101,6 +104,7 @@ void Renderer2D::Init() {
 	s_LinesVB = VertexBuffer::Create(Renderer2DData::MaxVertices * sizeof(LineVertex));
 	s_LinesVB->AddAttrib(3, GL_FLOAT); // x y z
 	s_LinesVB->AddAttrib(4, GL_FLOAT); // r g b a
+	s_LinesVB->AddAttrib(1, GL_INT); // Entity ID
 
 	s_LinesVA = VertexArray::Create();
 	s_LinesVA->AddVertexBuffer(s_LinesVB);
@@ -166,7 +170,7 @@ void Renderer2D::Flush() {
 		s_LinesVB->SetData(s_Data.LineVertexBufferBase, dataSize);
 		s_LineShader->Bind();
 		s_LineShader->SetMat4("u_ViewProjection", s_Data.CameraViewProjectionMatrix);
-		Renderer::SetLineWidth(2.0f);
+		Renderer::SetLineWidth(4.0f);
 		Renderer::DrawVertexArray(s_LinesVA, s_Data.LineVertexCount, GL_LINES);
 		s_StatsDrawCalls++;
 	}
@@ -187,7 +191,11 @@ void Renderer2D::StartBatch(){
 	s_Data.TextureSlotIndex = 1;
 }
 
-void Renderer2D::DrawQuad(const glm::mat4& transform, const glm::vec4& color, float textureIndex, float tilingFactor) {
+void Renderer2D::DrawSprite(const glm::mat4& transform, SpriteRendererComponent& component, int entityID){
+	DrawQuad(transform, component.Texture, component.Color, component.TilingFactor, entityID);
+}
+
+void Renderer2D::DrawQuad(const glm::mat4& transform, const glm::vec4& color, float textureIndex, float tilingFactor, int entityID) {
 	if (s_Data.QuadIndexCount >= Renderer2DData::MaxIndices)
 		FlushAndReset();
 
@@ -197,6 +205,7 @@ void Renderer2D::DrawQuad(const glm::mat4& transform, const glm::vec4& color, fl
 		s_Data.VertexBufferPtr->TexCoords = s_Data.TextureCoords[i];
 		s_Data.VertexBufferPtr->TexIndex = textureIndex;
 		s_Data.VertexBufferPtr->TilingFactor = tilingFactor;
+		s_Data.VertexBufferPtr->EntityID = entityID;
 		s_Data.VertexBufferPtr++;
 	}
 
@@ -204,48 +213,73 @@ void Renderer2D::DrawQuad(const glm::mat4& transform, const glm::vec4& color, fl
 	s_StatsQuads++;
 }
 
-void Renderer2D::DrawQuad(const glm::mat4& transform, const std::string& texturePath, const glm::vec4& color, float tilingFactor) {
-	DrawQuad(transform, color, GetTextureIndex(texturePath), tilingFactor);
+void Renderer2D::DrawQuad(const glm::mat4& transform, const std::string& texturePath, const glm::vec4& color, float tilingFactor, int entityID) {
+	DrawQuad(transform, color, GetTextureIndex(texturePath), tilingFactor, entityID);
 }
 
-void Renderer2D::DrawQuad(const glm::mat4& transform, const Ref<Texture>& texture, const glm::vec4& color, float tilingFactor){
+void Renderer2D::DrawQuad(const glm::mat4& transform, const Ref<Texture>& texture, const glm::vec4& color, float tilingFactor, int entityID){
 	float texId = 0.0f;
 	if (texture)
 		texId = GetTextureIndex(texture);
-	DrawQuad(transform, color, texId, tilingFactor);
+	DrawQuad(transform, color, texId, tilingFactor, entityID);
 }
 
-void Renderer2D::DrawQuad(const glm::vec2& position, const glm::vec2& size, const glm::vec4& color, float rotation, float textureIndex, float tilingFactor) {
-	DrawQuad({ position.x, position.y, 0.0f }, size, color, rotation, textureIndex, tilingFactor);
+void Renderer2D::DrawQuad(const glm::vec2& position, const glm::vec2& size, const glm::vec4& color, float rotation, float textureIndex, float tilingFactor, int entityID) {
+	DrawQuad({ position.x, position.y, 0.0f }, size, color, rotation, textureIndex, tilingFactor, entityID);
 }
 
-void Renderer2D::DrawQuad(const glm::vec3& position, const glm::vec2& size, const glm::vec4& color, float rotation, float textureIndex, float tilingFactor) {
+void Renderer2D::DrawQuad(const glm::vec3& position, const glm::vec2& size, const glm::vec4& color, float rotation, float textureIndex, float tilingFactor, int entityID) {
 	glm::mat4 transform = glm::translate(glm::mat4(1.0f), { position.x, position.y, position.z })
 		* glm::rotate(glm::mat4(1.0f), glm::radians(rotation), { 0.0f, 0.0f, 1.0f })
 		* glm::scale(glm::mat4(1.0f), { size.x, size.y, 1.0f });
 
-	DrawQuad(transform, color, textureIndex, tilingFactor);
+	DrawQuad(transform, color, textureIndex, tilingFactor, entityID);
 }
 
 
-void Renderer2D::DrawQuad(const std::string& texturePath, const glm::vec2& position, const glm::vec2& size, const glm::vec4& color, float rotation, float tilingFactor) {
-	DrawQuad(texturePath, { position.x, position.y, 0.0f }, size, color, rotation, tilingFactor);
+void Renderer2D::DrawQuad(const std::string& texturePath, const glm::vec2& position, const glm::vec2& size, const glm::vec4& color, float rotation, float tilingFactor, int entityID) {
+	DrawQuad(texturePath, { position.x, position.y, 0.0f }, size, color, rotation, tilingFactor, entityID);
 }
 
-void Renderer2D::DrawQuad(const std::string& texturePath, const glm::vec3& position, const glm::vec2& size, const glm::vec4& color, float rotation, float tilingFactor){
-	DrawQuad(position, size, color, rotation, GetTextureIndex(texturePath), tilingFactor);
+void Renderer2D::DrawQuad(const std::string& texturePath, const glm::vec3& position, const glm::vec2& size, const glm::vec4& color, float rotation, float tilingFactor, int entityID){
+	DrawQuad(position, size, color, rotation, GetTextureIndex(texturePath), tilingFactor, entityID);
 }
 
-void Renderer2D::DrawLine(const glm::vec3& p0, const glm::vec3& p1, const glm::vec4& color){
+void Renderer2D::DrawLine(const glm::vec3& p0, const glm::vec3& p1, const glm::vec4& color, int entityID){
 	s_Data.LineVertexBufferPtr->Position = p0;
 	s_Data.LineVertexBufferPtr->Color = color;
+	s_Data.LineVertexBufferPtr->EntityID = entityID;
 	s_Data.LineVertexBufferPtr++;
 
 	s_Data.LineVertexBufferPtr->Position = p1;
 	s_Data.LineVertexBufferPtr->Color = color;
+	s_Data.LineVertexBufferPtr->EntityID = entityID;
 	s_Data.LineVertexBufferPtr++;
 
 	s_Data.LineVertexCount += 2;
+}
+
+void Renderer2D::DrawRect(const glm::vec3& position, const glm::vec3& size, const glm::vec4& color, int entityID){
+	glm::vec3 p0 = glm::vec3(position.x - size.x * 0.5, position.y - size.y * 0.5, position.z);
+	glm::vec3 p1 = glm::vec3(position.x + size.x * 0.5, position.y - size.y * 0.5, position.z);
+	glm::vec3 p2 = glm::vec3(position.x + size.x * 0.5, position.y + size.y * 0.5, position.z);
+	glm::vec3 p3 = glm::vec3(position.x - size.x * 0.5, position.y + size.y * 0.5, position.z);
+
+	DrawLine(p0, p1, color, entityID);
+	DrawLine(p1, p2, color, entityID);
+	DrawLine(p2, p3, color, entityID);
+	DrawLine(p3, p0, color, entityID);
+}
+
+void Renderer2D::DrawRect(const glm::mat4& transform, const glm::vec4& color, int entityID) {
+	glm::vec3 vertices[4];
+	for (size_t i = 0; i < 4; i++)
+		vertices[i] = transform * s_Data.QuadVertexPositions[i];
+
+	DrawLine(vertices[0], vertices[1], color, entityID);
+	DrawLine(vertices[1], vertices[2], color, entityID);
+	DrawLine(vertices[2], vertices[3], color, entityID);
+	DrawLine(vertices[3], vertices[0], color, entityID);
 }
 
 void Renderer2D::ResetStats() {

@@ -1,12 +1,14 @@
 #shader vertex
-#version 330 core
+#version 450 core
 
 layout(location = 0) in vec3 a_Position;
 layout(location = 1) in vec4 a_Color;
+layout(location = 2) in int a_EntityID;
 
 uniform mat4 u_ViewProjection;
 
-out vec4 v_Color;
+layout (location = 0) out vec4 v_Color;
+layout (location = 1) out flat int v_EntityID;
 
 void main()
 {
@@ -15,13 +17,16 @@ void main()
 }
 
 #shader fragment
-#version 330 core
+#version 450 core
 
 layout(location = 0) out vec4 color;
+layout(location = 1) out int EntityID;
 
-in vec4 v_Color;
+layout (location = 0) in vec4 v_Color;
+layout (location = 1) in flat int v_EntityID;
 
 void main()
 {
 	color = v_Color;
+	EntityID = v_EntityID;
 }

@@ -7,15 +7,24 @@
 
 #include "EntityPropertyPanel.h"
 
+#include "EditorEvents.h"
+
 
 class SceneEntitiesPanel {
 public:
-	SceneEntitiesPanel() = default;
+	SceneEntitiesPanel() {
+		SUB_EVENT(EntitySelectedEvent, SceneEntitiesPanel::OnSelectedEntity);
+	};
 	SceneEntitiesPanel(const Ref<Scene>& scene);
 
 	void SetContext(const Ref<Scene>& scene);
 
 	void OnImGuiRender();
+
+	inline Entity& GetSelectedEntity() { return m_SelectionContext; }
+	inline void SetSelectedEntity(Entity& entity) { m_SelectionContext = entity; }
+
+	bool OnSelectedEntity(EntitySelectedEvent& e);
 
 private:
 	void DrawEntityNode(Entity e);

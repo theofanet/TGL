@@ -60,16 +60,16 @@ float EditorCamera::ZoomSpeed() const {
 }
 
 void EditorCamera::OnUpdate(float ts) {
-	if (Keyboard::IsHeld(KEY_LEFT_ALT)) {
+	if (Keyboard::IsHeld(TGL_KEY_LEFT_ALT)) {
 		const glm::vec2& mouse = Mouse::GetPosition();
 		glm::vec2 delta = (mouse - m_MousePosition) * 0.003f;
 		m_MousePosition = mouse;
 
-		if (Mouse::IsButtonHeld(MOUSE_BUTTON_LEFT))
+		if (Mouse::IsButtonHeld(TGL_MOUSE_BUTTON_LEFT))
 			MousePan(delta);
-		else if (Mouse::IsButtonHeld(MOUSE_BUTTON_MIDDLE))
+		else if (Mouse::IsButtonHeld(TGL_MOUSE_BUTTON_MIDDLE))
 			MouseRotate(delta);
-		else if (Mouse::IsButtonHeld(MOUSE_BUTTON_RIGHT))
+		else if (Mouse::IsButtonHeld(TGL_MOUSE_BUTTON_RIGHT))
 			MouseZoom(delta.y);
 
 		UpdateView();

@@ -8,11 +8,13 @@
 SceneEntitiesPanel::SceneEntitiesPanel(const Ref<Scene>& scene)
 	: m_PropertyPanel(scene) {
 	SetContext(scene);
+	SUB_EVENT(EntitySelectedEvent, SceneEntitiesPanel::OnSelectedEntity);
 }
 
 void SceneEntitiesPanel::SetContext(const Ref<Scene>& scene){
 	m_Context = scene;
 	m_PropertyPanel.SetContext(scene);
+	m_SelectionContext = {};
 }
 
 void SceneEntitiesPanel::OnImGuiRender(){
@@ -35,6 +37,11 @@ void SceneEntitiesPanel::OnImGuiRender(){
 
 	if (m_SelectionContext)
 		m_PropertyPanel.OnImGuiRender(m_SelectionContext);
+}
+
+bool SceneEntitiesPanel::OnSelectedEntity(EntitySelectedEvent& e){
+	SetSelectedEntity(e.Ent);
+	return true;
 }
 
 void SceneEntitiesPanel::DrawEntityNode(Entity e){

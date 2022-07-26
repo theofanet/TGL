@@ -25,14 +25,14 @@ public:
 
 		m_MousePosition = Mouse::GetPosition();
 
-		if (Mouse::IsButtonHeld(MOUSE_BUTTON_LEFT))
+		if (Mouse::IsButtonHeld(TGL_MOUSE_BUTTON_LEFT))
 			m_MouseDown = true;
 		else
 			m_MouseDown = false;
 	}
 
 	bool OnMouseReleased(EventMouseButtonRelease& e) {
-		if (e.Button == MOUSE_BUTTON_LEFT)
+		if (e.Button == TGL_MOUSE_BUTTON_LEFT)
 			m_MouseDown = false;
 		return true;
 	}
@@ -40,7 +40,7 @@ public:
 	bool OnScroll(EventMouseScroll& e) {
 		auto& camera = GetComponent<CameraComponent>().Camera;
 		float z = camera.GetOrthographicSize();
-		z -= e.Y * 0.25;
+		z -= (float)e.Y * 0.25;
 		z = std::max(z, 0.25f);
 		camera.SetOrthographicSize(z);
 

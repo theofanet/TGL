@@ -17,6 +17,7 @@ public:
 	virtual void OnAttach();
 	virtual void OnUpdate(float ts);
 	virtual void OnDraw();
+	void OnOverlayDraw();
 	virtual void OnGuiDraw();
 
 private:

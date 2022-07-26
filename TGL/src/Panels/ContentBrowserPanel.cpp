@@ -22,7 +22,7 @@ void ContentBrowserPanel::OnImGuiRender(){
 
 	static float padding = 16.0f;
 	static float thumbnailSize = 64.0f;
-	float cellSize = thumbnailSize + padding;
+	float cellSize = thumbnailSize + padding*2;
 
 	float panelWidth = ImGui::GetContentRegionAvail().x;
 	int columnCount = (int)(panelWidth / cellSize);
@@ -54,6 +54,8 @@ void ContentBrowserPanel::OnImGuiRender(){
 				m_CurrentDirectory /= path.filename();
 		}
 		
+		ImVec2 textSize = ImGui::CalcTextSize(filenameStr.c_str());
+		ImGui::SetCursorPosX(cellSize * ImGui::GetColumnIndex() + cellSize * 0.5 - textSize.x * 0.5);
 		ImGui::TextWrapped(filenameStr.c_str());
 
 		ImGui::NextColumn();

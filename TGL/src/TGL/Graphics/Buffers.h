@@ -3,7 +3,7 @@
 #include <glad/glad.h>
 #include <vector>
 
-#include "TGL/Core/Core.h";
+#include "TGL/Core/Core.h"
 
 
 
