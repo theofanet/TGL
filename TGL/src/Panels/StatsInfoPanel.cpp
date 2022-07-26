@@ -10,8 +10,7 @@
 void StatsInfoPanel::OnImGuiRender(){
 	ImGui::Begin("Stats");
 
-	ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_Framed
-		| ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_AllowItemOverlap | ImGuiTreeNodeFlags_FramePadding;
+	ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_SpanAvailWidth;
 
 	bool opened = ImGui::TreeNodeEx("Graphics stats");
 	

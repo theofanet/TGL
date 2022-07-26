@@ -9,10 +9,10 @@
 #include "Panels/StatsInfoPanel.h"
 
 
-class MyLayer : public Layer {
+class EditorLayer : public Layer {
 public:
-	MyLayer();
-	~MyLayer();
+	EditorLayer();
+	~EditorLayer();
 
 	virtual void OnAttach();
 	virtual void OnUpdate(float ts);

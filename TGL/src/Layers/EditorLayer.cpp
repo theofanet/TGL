@@ -1,27 +1,27 @@
 #include "tglpch.h"
-#include "MyLayer.h"
+#include "EditorLayer.h"
 
 #include "imgui.h"
 #include "Scripts/CameraController.h"
 
 
-MyLayer::MyLayer() 
+EditorLayer::EditorLayer() 
 	: Layer("3D Tests"), 
 	  m_EditorCamera(EditorCamera(45.0f, 1.778f, 0.1f, 1000.0f)) {
 	float aspectRatio = Application::GetInstance()->GetWindowProps().Width / Application::GetInstance()->GetWindowProps().Height;
 }
 
-MyLayer::~MyLayer() {
+EditorLayer::~EditorLayer() {
 
 }
 
-void MyLayer::OnAttach() {
+void EditorLayer::OnAttach() {
 	m_ViewportPanel.InitFrameBuffer();
 	m_ActiveScene = CreateRef<Scene>();
 	m_EntitiesPanel.SetContext(m_ActiveScene);
 }
 
-void MyLayer::OnUpdate(float ts) {
+void EditorLayer::OnUpdate(float ts) {
 	FrameBufferProps props = m_ViewportPanel.GetFrameBuffer()->GetProps();
 	if (props.Height != m_ViewportPanel.GetViewportSize().y || props.Width != m_ViewportPanel.GetViewportSize().x) {
 		glm::vec2 size = { m_ViewportPanel.GetViewportSize().x, m_ViewportPanel.GetViewportSize().y };
@@ -38,7 +38,7 @@ void MyLayer::OnUpdate(float ts) {
 	}
 }
 
-void MyLayer::OnDraw() {
+void EditorLayer::OnDraw() {
 	m_ViewportPanel.BindFrameBuffer();
 
 	Renderer::Clear({ 0.15f, 0.15f, 0.15f });
@@ -49,7 +49,7 @@ void MyLayer::OnDraw() {
 	m_ViewportPanel.UnBindFrameBuffer();
 }
 
-void MyLayer::OnGuiDraw() {
+void EditorLayer::OnGuiDraw() {
 	bool workspaceOpen = true;
 	ImGuiRenderer::StartWorkspace(workspaceOpen);
 
