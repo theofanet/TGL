@@ -1,6 +1,8 @@
 #pragma once
 
 #include "entt.hpp"
+#include "TGL/Core/Events.h"
+#include "TGL/Graphics/EditorCamera.h"
 
 class Entity;
 
@@ -11,11 +13,14 @@ public:
 	~Scene();
 
 	Entity CreateEntity(const std::string& name = "Entity");
+	void DestroyEntity(const Entity& entity);
 
 	entt::registry& Reg() { return m_Registry; }
 
 	void OnUpdate(float ts);
+	void OnUpdateEditor(float ts);
 	void OnDraw();
+	void OnDrawEditor(const EditorCamera& camera);
 
 	void SetViewportSize(uint32_t width, uint32_t height);
 

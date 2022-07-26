@@ -17,6 +17,7 @@ protected:
 	virtual void OnDestroy() {}
 	virtual void OnUpdate(float ts) {}
 	virtual void OnDraw() {}
+	virtual void OnEvent(Event& e) {}
 
 private:
 	Entity m_Entity;

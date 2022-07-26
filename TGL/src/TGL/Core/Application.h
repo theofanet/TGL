@@ -31,6 +31,7 @@ public:
 	bool OnQuit(EventApplicationQuit&);
 
 	static Application* GetInstance();
+	static const float GetFPS() { return s_FPS; }
 
 private:
 	float m_LastTime;
@@ -40,4 +41,5 @@ private:
 	WindowProps m_Props;
 
 	static Application *s_Instance;
+	static float s_FPS;
 };

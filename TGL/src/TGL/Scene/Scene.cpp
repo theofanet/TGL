@@ -22,6 +22,10 @@ Entity Scene::CreateEntity(const std::string& name){
 	return entity;
 }
 
+void Scene::DestroyEntity(const Entity& entity){
+	m_Registry.destroy(entity);
+}
+
 void Scene::OnUpdate(float ts){
 	m_Registry.view<NativeScriptComponent>().each([=](auto entity, auto& nsc) {
 		if (!nsc.Instance) {
@@ -29,9 +33,13 @@ void Scene::OnUpdate(float ts){
 			nsc.Instance->m_Entity = Entity{ entity, this };
 			nsc.Instance->OnCreate();
 		}
-
+		
 		nsc.Instance->OnUpdate(ts);
 	});
+}
+
+void Scene::OnUpdateEditor(float ts){
+
 }
 
 void Scene::OnDraw(){
@@ -43,20 +51,29 @@ void Scene::OnDraw(){
 		auto [transform, camera] = view.get<TransformComponent, CameraComponent>(entity);
 		if (camera.Primary) {
 			mainCamera = &camera.Camera;
-			mainCameraTransform = &transform.Transform;
+			mainCameraTransform = &transform.GetTransform();
 		}
 	}
 
 	if (mainCamera) {
-		TRACE("DEBUG : {} {} {} {} {}", mainCamera->GetViewportWidth(), mainCamera->GetViewportHeight(), mainCamera->GetViewportWidth() / 1.5f, mainCamera->GetViewportHeight() / 0.98f, mainCamera->GetAspectRatio());
 		Renderer2D::Begin(*mainCamera, *mainCameraTransform);
 		auto group = m_Registry.group<TransformComponent>(entt::get<SpriteRendererComponent>);
 		for (auto entity : group) {
 			auto [transform, sprite] = group.get<TransformComponent, SpriteRendererComponent>(entity);
-			Renderer2D::DrawQuad(transform, sprite.Color);
+			Renderer2D::DrawQuad(transform.GetTransform(), sprite.Color);
 		}
 		Renderer2D::End();
 	}
+}
+
+void Scene::OnDrawEditor(const EditorCamera& camera){
+	Renderer2D::Begin(camera);
+	auto group = m_Registry.group<TransformComponent>(entt::get<SpriteRendererComponent>);
+	for (auto entity : group) {
+		auto [transform, sprite] = group.get<TransformComponent, SpriteRendererComponent>(entity);
+		Renderer2D::DrawQuad(transform.GetTransform(), sprite.Texture, sprite.Color, sprite.TilingFactor);
+	}
+	Renderer2D::End();
 }
 
 void Scene::SetViewportSize(uint32_t width, uint32_t height){

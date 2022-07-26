@@ -5,6 +5,7 @@
 
 
 Application* Application::s_Instance = nullptr;
+float Application::s_FPS = 0.0f;
 
 
 Application* Application::GetInstance() {
@@ -41,6 +42,7 @@ void Application::Run() {
 		float time = (float)glfwGetTime();
 		float timestep = time - m_LastTime;
 		m_LastTime = time;
+		s_FPS = (1 / timestep);
 
 		if (!m_Minimized) {
 			Renderer::Clear();

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Core.h"
+#include "Events.h"
 #include <vector>
 
 
@@ -14,6 +15,8 @@ public:
 	virtual void OnUpdate(float ts) {};
 	virtual void OnDraw() {};
 	virtual void OnGuiDraw() {};
+
+	virtual bool OnEvent(Event& e) { return true; }
 protected:
 	std::string m_Name;
 };

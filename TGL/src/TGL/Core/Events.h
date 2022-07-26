@@ -46,11 +46,13 @@ public:
 
 // ===== APP ========
 
-class EventApplicationQuit : public Event {};
+class EventApplicationQuit : public Event {
+};
 
 // ===== WINDOWS ======
 
-class EventWindowClose : public Event {};
+class EventWindowClose : public Event {
+};
 
 class EventWindowResize : public Event {
 public:
@@ -98,8 +100,6 @@ public:
 };
 
 
-
-
 // Dispatcher
 template<typename T>
 class EventDispatcher {
@@ -107,13 +107,13 @@ public:
 	template <typename ... Args>
 	inline static bool Trigger(Args&& ... args) {
 		T e = T(std::forward<Args>(args)...);
-		if (std::is_same<T, Event>::value || EventDispatcher<Event>::Trigger(e)) {
+		//if (EventDispatcher<Event>::Trigger(e)) {
 			for (const auto& fn : s_Subscribers) {
 				if (!(*fn)(e))
 					return false;
 			}
 			return true;
-		}
+		//}
 	}
 
 	inline static void Sub(FuncType<T> f) {
@@ -129,7 +129,7 @@ SubscriberList<T> EventDispatcher<T>::s_Subscribers;
 
 
 // MACROS
-#define EVENT_FN(fn) std::bind(&fn, this, std::placeholders::_1)
-#define SUB_EVENT(e, fn) EventDispatcher<e>::Sub(EVENT_FN(fn))
-#define ON_EVENT(fn) EventDispatcher<Event>::Sub(EVENT_FN(fn));
-#define TRIGGER_EVENT(e, ...) EventDispatcher<e>::Trigger(__VA_ARGS__)
+#define EVENT_FN(fn) [this](auto&&... args) -> decltype(auto) { return this->fn(std::forward<decltype(args)>(args)...); }
+#define SUB_EVENT(e, fn) EventDispatcher<e>::Sub(EVENT_FN(fn));
+//#define ON_EVENT(fn) EventDispatcher<Event>::Sub(EVENT_FN(fn));
+#define TRIGGER_EVENT(e, ...) EventDispatcher<e>::Trigger(__VA_ARGS__);

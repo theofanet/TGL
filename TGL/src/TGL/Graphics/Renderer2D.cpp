@@ -129,12 +129,17 @@ void Renderer2D::Shutdown(){
 	// delete[] s_Data.LineVertexBufferBase; // TOdO : FIX ?
 }
 
-void Renderer2D::Begin(RawCamera camera, glm::mat4 transform){
+void Renderer2D::Begin(const EditorCamera& camera) {
+	s_Data.CameraViewProjectionMatrix = camera.GetViewProjection();
+	StartBatch();
+}
+
+void Renderer2D::Begin(const RawCamera& camera, const glm::mat4& transform){
 	s_Data.CameraViewProjectionMatrix = camera.GetProjection() * glm::inverse(transform);
 	StartBatch();
 }
 
-void Renderer2D::Begin(Ref<Camera> camera) {
+void Renderer2D::Begin(const Ref<Camera>& camera) {
 	s_Data.CameraViewProjectionMatrix = camera->GetViewProjectionMatrix();
 	StartBatch();
 }
@@ -203,6 +208,13 @@ void Renderer2D::DrawQuad(const glm::mat4& transform, const std::string& texture
 	DrawQuad(transform, color, GetTextureIndex(texturePath), tilingFactor);
 }
 
+void Renderer2D::DrawQuad(const glm::mat4& transform, const Ref<Texture>& texture, const glm::vec4& color, float tilingFactor){
+	float texId = 0.0f;
+	if (texture)
+		texId = GetTextureIndex(texture);
+	DrawQuad(transform, color, texId, tilingFactor);
+}
+
 void Renderer2D::DrawQuad(const glm::vec2& position, const glm::vec2& size, const glm::vec4& color, float rotation, float textureIndex, float tilingFactor) {
 	DrawQuad({ position.x, position.y, 0.0f }, size, color, rotation, textureIndex, tilingFactor);
 }
@@ -243,10 +255,14 @@ void Renderer2D::ResetStats() {
 
 float Renderer2D::GetTextureIndex(const std::string& filepath) {
 	Ref<Texture> texture = Registry::GetTexture(filepath);
+	return GetTextureIndex(texture);
+}
+
+float Renderer2D::GetTextureIndex(const Ref<Texture>& texture) {
 	float textureIndex = 0.0f;
 
 	for (uint32_t i = 1; i < s_Data.TextureSlotIndex; i++) {
-		if (*s_Data.TextureSlots[i].get() == *texture.get()) {
+		if (*s_Data.TextureSlots[i] == *texture) {
 			textureIndex = (float)i;
 			break;
 		}

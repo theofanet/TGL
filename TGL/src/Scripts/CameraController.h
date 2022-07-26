@@ -8,26 +8,33 @@ class CameraController : public ScriptableEntity {
 public:
 	void OnCreate() {
 		SUB_EVENT(EventMouseScroll, CameraController::OnScroll);
+		SUB_EVENT(EventMouseButtonRelease, CameraController::OnMouseReleased);
 	}
 
 	void OnUpdate(float ts) {
-		if (Mouse::IsButtonHeld(MOUSE_LEFT_BUTTON))
-			m_MouseDown = true;
-		else
-			m_MouseDown = false;
-
 		if (m_MouseDown) {
-			auto& transform = GetComponent<TransformComponent>().Transform;
+			auto& transform = GetComponent<TransformComponent>().Translation;
 			auto& camera = GetComponent<CameraComponent>().Camera;
 
 			glm::vec2 pos = Mouse::GetPosition() - m_MousePosition;
 			glm::vec3 translation = glm::vec3(-pos.x / (camera.GetViewportWidth() / camera.GetAspectRatio()), pos.y / camera.GetViewportHeight(), 0.0f)
 				* camera.GetOrthographicSize();
 
-			transform = glm::translate(transform, translation);
+			transform += translation;
 		}
 
 		m_MousePosition = Mouse::GetPosition();
+
+		if (Mouse::IsButtonHeld(MOUSE_BUTTON_LEFT))
+			m_MouseDown = true;
+		else
+			m_MouseDown = false;
+	}
+
+	bool OnMouseReleased(EventMouseButtonRelease& e) {
+		if (e.Button == MOUSE_BUTTON_LEFT)
+			m_MouseDown = false;
+		return true;
 	}
 
 	bool OnScroll(EventMouseScroll& e) {
@@ -36,6 +43,7 @@ public:
 		z -= e.Y * 0.25;
 		z = std::max(z, 0.25f);
 		camera.SetOrthographicSize(z);
+
 		return true;
 	}
 

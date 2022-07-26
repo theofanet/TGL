@@ -5,6 +5,8 @@
 #include "TGL/Scene/Components.h"
 #include "TGL/Scene/Entity.h"
 
+#include "EntityPropertyPanel.h"
+
 
 class SceneEntitiesPanel {
 public:
@@ -21,4 +23,6 @@ private:
 private:
 	Ref<Scene> m_Context;
 	Entity m_SelectionContext;
+
+	EntityPropertyPanel m_PropertyPanel;
 };
